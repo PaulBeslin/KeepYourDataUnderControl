@@ -92,10 +92,9 @@ class QrCode {
 
     decode() {
         //TODO replace the following decoding algorithm by using a js library
-        console.log("DECODING! ",this.qrCodeLink);
         
         toDataURL(this.qrCodeLink,(item)=>{
-            console.log("Here is your item",item);
+            //console.log("Here is your item",item);
             this.decodeQrCode(item, (imageLink) => {
                 this.link = imageLink;
               });
