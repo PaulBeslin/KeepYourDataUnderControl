@@ -49,23 +49,30 @@ $( document ).ready(function() {
         }
     });
 
-    //TODO: make it work without using <span>.
-    $("span").filter(':not([analyzed])').each(async function () {
-        //Get the URI to the text file.
-        let fileURI = $(this).text();
+    //Find all URLs leading to a stored text, and replace them by the the text.
+    document.body.innerHTML = replace_urls_in_string(document.body.innerHTML, uri_to_text);
 
-        if (fileURI === undefined || fileURI.trim().length == 0) {
-            return;
+    //HTTP request used to get the text from storage.
+    function uri_to_text(uri) {
+        if (uri === undefined || uri.trim().length == 0) {
+            console.error(`URL ${uri} is invalid.`);
+            return uri;
         }
 
-        //Replace the contents of the span with the extracted text.
-        const textContainer = $(this);
-        $.get(fileURI, function (data) {
-            textContainer.html("[IT WORKS!]" + data);
+        var content;
+        $.ajax({
+            type: 'get',
+            url: uri,
+            dataType: 'text',
+            async: false,
+            success: function (data) {
+                content = data;
+            }
         });
-        
-    });
+        return content;
+    }
 });
+
 
 function getAttributes ( element ) {
     const attributes = element.attributes;

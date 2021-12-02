@@ -17,3 +17,8 @@ app.db
 # Python related files
 **/*.pyc
 **/__pycache__/*
+
+# Database files
+demo-service/api/MainData
+demo-storage/files_db
+demo-storage/MainStorage

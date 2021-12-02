@@ -17,7 +17,14 @@
         "http://*/*",
         "https://*/*"
       ],
-      "js": ["jquery-3.5.1.min.js","qr.min.js","qrdecode.js","QrCode.js","content_script-1.js"]
+        "js": [
+            "jquery-3.5.1.min.js",
+            "qr.min.js",
+            "qrdecode.js",
+            "QrCode.js",
+            "content_script-1.js",
+            "text_encoding.js"
+        ]
     }
   ],
 

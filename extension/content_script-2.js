@@ -93,9 +93,10 @@ async function parseForm(form_html, form_data) {
                     // We set the form data with the new value generated
                     form_data.set(inputName, data);
                 }
-                // If the data self stored was a text we return the url
+                // If the data self stored was a text we return the decorated url (check text_encoding.js)
                 else if (type === "text") {
                     data = responseJson.url;
+                    data = encode_text_url(data);
                     form_data.set(inputName, data);
                 }
             
