@@ -51,9 +51,11 @@ $( document ).ready(function() {
     });
 
     //Find all URLs leading to a stored text, and replace them by the the text.
-    document.body.innerHTML = replace_urls_in_string(document.body.innerHTML, uri_to_text);
-
-    //HTTP request used to get the text from storage.
+    //document.body.innerHTML = replace_urls(document.body.innerHTML, uri_to_text);
+    replace_urls_async(document.body.innerHTML, uri_to_text2)
+        .then((new_html) => { document.body.innerHTML = new_html; });
+    
+    //sync HTTP request used to get the text from storage.
     function uri_to_text(uri) {
         if (uri === undefined || uri.trim().length == 0) {
             console.error(`URL ${uri} is invalid.`);
@@ -62,7 +64,7 @@ $( document ).ready(function() {
 
         var content;
         $.ajax({
-            type: 'get',
+            type: 'GET',
             url: uri,
             dataType: 'text',
             async: false,
@@ -71,6 +73,13 @@ $( document ).ready(function() {
             }
         });
         return content;
+    }
+
+    //async HTTP request used to get the text from storage.
+    async function uri_to_text2(uri) {
+        let response = await fetch(uri);
+        let data = await response.text();
+        return data;
     }
 });
 

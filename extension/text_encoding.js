@@ -8,6 +8,9 @@ const textSuffix = String.raw`[/${ tag }]`;
 const regexPrefix = textPrefix.replace('[', '\\[').replace(']', '\\]');
 const regexSuffix = textSuffix.replace('[', '\\[').replace(']', '\\]').replace('/', '\\/');
 
+//RegEx used to replace URLs.
+const url_regex = new RegExp(regexPrefix + '(.+)' + regexSuffix, 'g');
+
 
 /**
  * Decorates an URL using a constant pseudo-tag.
@@ -22,15 +25,36 @@ function encode_text_url(url) {
  * Finds all URLs pointing to a stored text in the given string.
  * URLs are transformed into another string, then replaced in the original string parameter.
  * @param {string} text The text to parse (should come from the HTML page).
- * @param {Function} func_translate The function called to transform the URL string into another string.
+ * @param {Function} func_translate The synchronous function called to transform the URL string into another string.
  * 
  * @returns {string} The original string, where all URLs are replaced.
  */
-function replace_urls_in_string(text, func_translate) {
-    //Match anything between the two pseudo-tags.
-    const url_regex = new RegExp(regexPrefix + '(.+)' + regexSuffix, 'g');
+function replace_urls(text, func_translate) {
+    return replaced_text = text.replaceAll(url_regex, function (_, url) {
+        return func_translate(url);
+    });
+}
 
-    var replaced_text = text.replaceAll(url_regex, function (_, url) { return func_translate(url); });
+/**
+ * Finds all URLs pointing to a stored text in the given string.
+ * URLs are transformed into another string, then replaced in the original string parameter.
+ * This version allows to use an async function to execute the transformation of the URL.
+ * @param {string} text The text to parse (should come from the HTML page).
+ * @param {Function} func_translate The asynchronous function called to transform the URL string into another string.
+ *
+ * @returns {string} The original string, where all URLs are replaced.
+ */
+async function replace_urls_async(text, func_translate) {
+    const promises = [];
 
-    return replaced_text;
+    //Collect promises for each detected URL.
+    text.replaceAll(url_regex, function (_, url) {
+        promises.push(func_translate(url));
+    });
+
+    //Wait for async calls to end, then replace URLs.
+    const data = await Promise.all(promises);
+    return replaced_text = text.replaceAll(url_regex, function (_, _) {
+        return data.shift();
+    });
 }
