@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+$(document).ready(function () {
 
     var qrcode = {};
     $("e-img").each(function() {
@@ -51,9 +51,14 @@ $( document ).ready(function() {
     });
 
     //Find all URLs leading to a stored text, and replace them by the the text.
-    //document.body.innerHTML = replace_urls(document.body.innerHTML, uri_to_text);
-    replace_urls_async(document.body.innerHTML, uri_to_text2)
-        .then((new_html) => { document.body.innerHTML = new_html; });
+    $("span").each(async function () {
+        replace_urls_async($(this).text(), uri_to_text_async)
+            .then((newText) => {
+                if ($(this).text() != newText) {
+                    $(this).text(newText);
+                }
+            });
+    })
     
     //sync HTTP request used to get the text from storage.
     function uri_to_text(uri) {
@@ -76,7 +81,7 @@ $( document ).ready(function() {
     }
 
     //async HTTP request used to get the text from storage.
-    async function uri_to_text2(uri) {
+    async function uri_to_text_async(uri) {
         let response = await fetch(uri);
         let data = await response.text();
         return data;
