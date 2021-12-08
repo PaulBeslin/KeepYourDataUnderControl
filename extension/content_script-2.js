@@ -9,20 +9,18 @@ async function processInput(input) {
     //If no data was acquired, something went wrong.
     if (input.type === undefined || input.selection === undefined) {
         console.error("Tried to process an invalid input.");
-        console.log(input.selection);
-        console.log(input.type);
         return;
     }
 
-    let htmlContainer = document.activeElement;
     //Store the data, and get the encoded URI.
     let url = await storeData(input.type, input.selection);
 
-    //Encode the URI.
+    //Encode the URI, get a decorated text or a QR code.
     let encodedData = encodeUrl(input.type, url);
 
     //Replace the data in the HTML container by the encoded URI.
-    htmlContainer.innerHTML = encodedData;
+    let $container = findContainer(input.type, input.selection);
+    replaceInPage(input.type, encodedData, $container);
 }
 
 async function storeData(type, data) {
@@ -35,6 +33,19 @@ async function storeData(type, data) {
             // We convert our text as a file
             blob = new Blob([data], { type: "text/plain;charset=utf-8" });
             form.append("file", blob, "tmp.txt");
+            break;
+        case 'image':
+            let response = await fetch(data);
+            blob = await response.blob();
+            let metadata = {
+                type: 'image/jpeg'
+            };
+            let file = new File([blob], "tmp.jpg", metadata);
+            form.append("file", file, "tmp.jpg");
+            break;
+        case 'blob':
+            let file = new File([blob], "tmp.jpg", metadata);
+            form.append("file", file, "tmp.jpg");
             break;
         default:
             throw 'Input type is not supported';
@@ -60,6 +71,39 @@ function encodeUrl(type, url) {
     switch (type) {
         case 'text':
             return encode_text_url(url);
+        case 'image':
+            let qrCode = new QrCode(url);
+            qrCode.encode();
+            let img = qrCode.getImage();
+            return img;
+        default:
+            throw 'Input type is not supported';
+    }
+}
+
+function findContainer(type, post) {
+    let $baseContainer = $(':focus');
+    switch (type) {
+        case 'text':
+            //The focused element is the correct input element (at least on LinkedIn).
+            return $baseContainer;
+        case 'image':
+            //We need to find an img element with the same source as the selected image.
+            return $baseContainer.find("img[src='" + post + "']");
+        default:
+            throw 'Input type is not supported';
+    }
+}
+
+function replaceInPage(type, encodedData, $container) {
+    switch (type) {
+        case 'text':
+            $container.text(encodedData);
+            break;
+        case 'image':
+            $container.attr('src', encodedData);
+            console.log("New source : " + $container.attr('src'));
+            break;
         default:
             throw 'Input type is not supported';
     }

@@ -52,6 +52,7 @@ $(window).on("load", function () {
     });
     
     //Find all URLs leading to a stored text, and replace them by the the text.
+    //TODO: Test with $(":contains(...)")
     $("span").each(async function () {
         replace_urls_async($(this).text(), uri_to_text_async)
             .then((newText) => {
