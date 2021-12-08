@@ -16,7 +16,7 @@ async function processInput(input) {
     let url = await storeData(input.type, input.selection);
 
     //Encode the URI, get a decorated text or a QR code.
-    let encodedData = encodeUrl(input.type, url);
+    let encodedData = await encodeUrl(input.type, url);
 
     //Replace the data in the HTML container by the encoded URI.
     let $container = findContainer(input.type, input.selection);
@@ -25,6 +25,8 @@ async function processInput(input) {
 
 async function storeData(type, data) {
     let blob;
+    let metadata;
+    let file;
     let responseURL;
     let form = new FormData();
 
@@ -37,14 +39,14 @@ async function storeData(type, data) {
         case 'image':
             let response = await fetch(data);
             blob = await response.blob();
-            let metadata = {
-                type: 'image/jpeg'
-            };
-            let file = new File([blob], "tmp.jpg", metadata);
+            return await storeData('blob', blob);
+            metadata = { type: 'image/jpeg' };
+            file = new File([blob], "tmp.jpg", metadata);
             form.append("file", file, "tmp.jpg");
             break;
         case 'blob':
-            let file = new File([blob], "tmp.jpg", metadata);
+            metadata = { type: 'image/jpeg' };
+            file = new File([data], "tmp.jpg", metadata);
             form.append("file", file, "tmp.jpg");
             break;
         default:
@@ -67,7 +69,7 @@ async function storeData(type, data) {
     return JSON.parse(responseURL).url;
 }
 
-function encodeUrl(type, url) {
+async function encodeUrl(type, url) {
     switch (type) {
         case 'text':
             return encode_text_url(url);
@@ -75,7 +77,8 @@ function encodeUrl(type, url) {
             let qrCode = new QrCode(url);
             qrCode.encode();
             let img = qrCode.getImage();
-            return img;
+            let qrUrl = await storeData('blob', img);
+            return qrUrl;
         default:
             throw 'Input type is not supported';
     }
@@ -102,7 +105,6 @@ function replaceInPage(type, encodedData, $container) {
             break;
         case 'image':
             $container.attr('src', encodedData);
-            console.log("New source : " + $container.attr('src'));
             break;
         default:
             throw 'Input type is not supported';
