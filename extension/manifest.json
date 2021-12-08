@@ -3,12 +3,13 @@
   "description" : "Description",
   "version": "0.2",
 
-  "permissions": [
-    "activeTab",
-    "tabs",
-    "http://*/*",
-    "https://*/*"
-  ],
+    "permissions": [
+        "contextMenus",
+        "activeTab",
+        "tabs",
+        "http://*/*",
+        "https://*/*"
+    ],
   "content_scripts": [
     {
       "all_frames" : true,

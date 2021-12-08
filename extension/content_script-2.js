@@ -1,6 +1,81 @@
 'use strict';
 
-$("form").find("*[type=submit]").click((event) => {
+//Receives messages from the background.js script.
+chrome.runtime.onMessage.addListener(
+    (request, sender, sendEncodingRequest) => processInput(request)
+)
+
+async function processInput(input) {
+    //If no data was acquired, something went wrong.
+    if (input.type === undefined || input.selection === undefined) {
+        console.error("Tried to process an invalid input.");
+        console.log(input.selection);
+        console.log(input.type);
+        return;
+    }
+
+    let htmlContainer = document.activeElement;
+    //Store the data, and get the encoded URI.
+    let url = await storeData(input.type, input.selection);
+
+    //Encode the URI.
+    let encodedData = encodeUrl(input.type, url);
+
+    //Replace the data in the HTML container by the encoded URI.
+    htmlContainer.innerHTML = encodedData;
+}
+
+async function storeData(type, data) {
+    let blob;
+    let responseURL;
+    let form = new FormData();
+
+    switch (type) {
+        case 'text':
+            // We convert our text as a file
+            blob = new Blob([data], { type: "text/plain;charset=utf-8" });
+            form.append("file", blob, "tmp.txt");
+            break;
+        default:
+            throw 'Input type is not supported';
+    }
+    
+    let settings = {
+        // This url need to be changed to your own self storage
+        "url": "http://localhost:5001/",
+        "method": "POST",
+        "crossOrigin": true,
+        "timeout": 0,
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form, //????????????????????????????????????????????????
+        "async": false
+    };
+    responseURL = await $.ajax(settings);
+    return JSON.parse(responseURL).url;
+}
+
+function encodeUrl(type, url) {
+    switch (type) {
+        case 'text':
+            return encode_text_url(url);
+        default:
+            throw 'Input type is not supported';
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+//const linkedinButtonTag = ".share-actions__primary-action";
+const linkedinButtonTag = ".artdeco-button--2";
+const linkedinTextboxTag = "div.ql-editor";
+
+//Works for standard forms.
+$("form").find("*[type=submit]").click(onFormSubmit);
+
+function onFormSubmit(event) {
     event.preventDefault(); //this works for links
     let element = event.target.parentElement;
 
@@ -8,7 +83,18 @@ $("form").find("*[type=submit]").click((event) => {
         element = element.parentElement;
     }
     processForm(element);
-});
+}
+/*
+$(linkedinButtonTag).click(function (event) {
+    event.preventDefault();
+    var text = "";
+    $("*").children(linkedinTextboxTag).children("p").each(function(){
+        console.log($(this).text());
+        text += $(this).text() + "\n";
+    });
+    text = encode_text_url(text);
+    $("*").children(linkedinTextboxTag).text(text);
+});*/
 
 var filesToSend = [];
 
