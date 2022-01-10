@@ -1,126 +1,34 @@
-import uuid
 import os
 
-from bson.objectid import ObjectId
 from dotenv import load_dotenv
-from flask import (
-    abort,
-    Flask,
-    jsonify,
-    request,
-    Response,
-    redirect,
-    render_template,
-    send_from_directory,
-    url_for,
-)
+from flask import Flask
 from flask_cors import CORS
-from pymongo import MongoClient
-import pymongo
-from werkzeug.utils import secure_filename
+
+from controller import api
 import ssl
 
-load_dotenv()
-
-app = Flask(__name__)
-CORS(app)
-app.config['UPLOAD_FOLDER'] = os.environ.get("API_UPLOAD_FOLDER", "./")
-
-def get_files_collection():
-    try:
-        client = MongoClient(os.environ.get("MONGO_URL"),ssl_cert_reqs=ssl.CERT_NONE)
-        client.server_info()
-
-    except pymongo.errors.ServerSelectionTimeoutError as err:
-        return "COULD NOT CONNECT"
-
-    return client[os.environ.get("MONGO_DB_NAME")][os.environ.get("MONGO_FILES_COLLECTION_NAME")]
-
-def save_file_and_get_key(filename):
-    files_collection = get_files_collection()
-    # MongoDB rquires all documents to have an _id field set, PyMongo does that for us and returns
-    # it if we don't specify one in the first place when inserting document
-    # https://pymongo.readthedocs.io/en/stable/faq.html#why-does-pymongo-add-an-id-field-to-all-of-my-documents
-    inserted_id = files_collection.insert_one({"link": filename})
-    return str(inserted_id.inserted_id)
-
-def get_file_path(key):
-    files_collection = get_files_collection()
-    file_found = files_collection.find_one({"_id": ObjectId(key)})
-    return file_found.get("link") if file_found else None
-
-@app.route('/', methods=['GET'])
-def homePage():
-    return "Lucky You! This is da home page"
-
-@app.route('/', methods=['POST'])
-def upload_file():
-    # Taken from: https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
-
-    if 'file' not in request.files:
-        abort(Response("Missing file", 400))
+def create_app():
+    from models import db
     
-    file = request.files['file']
-    if file.filename == '':
-        abort(Response("Empty filename", 400))
+    app = Flask(__name__)
 
-    filename = secure_filename(file.filename)
-    
-    if os.path.isfile(app.config['UPLOAD_FOLDER']+"/"+filename):
-        extension = ""
-        if filename.find(".") != -1:
-            # At least one dot means we have an extension
-            values = filename.rsplit(".")
-            # Make sure we put back the filename like it was before, though without the extension
-            filename = '.'.join(values[:-1])
-            extension = "." + values[-1]
-        filename = filename + "_" + str(uuid.uuid4()) + extension
-    file.save(app.config['UPLOAD_FOLDER']+"/"+filename)
-    
-    key = save_file_and_get_key(filename)
-    finalUrl = os.environ.get("BASE_URL")+"/"+key
-    return jsonify(url=finalUrl)
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.sqlite')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    db.init_app(app)
+    with app.app_context():
+        # Create all tables if needed. This doesn't work when updating the fields of a models, in
+        # this case either make the ALTER TABLE by hand or delete the .db file
+        db.create_all()
+    load_dotenv()
 
-@app.route('/<key>')
-def get_file(key):
-    if key == 'favicon.ico':
-        # We don't have a favicon, let's make sure the
-        # requests to see it are treated separately
-        abort(404)
-    filename = get_file_path(key)
-    if not filename:
-        abort(404)
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    CORS(app)
+    app.config['UPLOAD_FOLDER'] = os.environ.get("API_UPLOAD_FOLDER", "./")
+    app.register_blueprint(api)
+    return app
 
-@app.route('/__debug__')
-def debug_main():
-    files_collection = get_files_collection()
-    return render_template('main.html',
-        base_url=os.environ.get("BASE_URL"),
-        files=[{
-            'id': str(file['_id']),
-            'link': file['link'],
-        } for file in files_collection.find()])
-
-@app.route('/__debug__/delete/')
-def debug_delete_all():
-    files_collection = get_files_collection()
-    for file in files_collection.find():
-        files_collection.delete_one({"_id": file["_id"]})
-        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], file["link"]))
-    return redirect(os.path.join(os.environ.get("BASE_URL"), url_for('debug_main')))
-
-@app.route('/__debug__/delete/<key>')
-def debug_delete(key):
-    files_collection = get_files_collection()
-    filename = get_file_path(key)
-    console.log("FileName ",filename)
-    if not filename:
-        abort(404)
-    files_collection.delete_one({"_id": ObjectId(key)})
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return redirect(os.path.join(os.environ.get("BASE_URL"), url_for('debug_main')))
 
 if __name__ == '__main__':
-   app.run(port=int(os.environ.get('FLASK_PORT', 5001)))
+    app = create_app()
+    app.run(port=int(os.environ.get('FLASK_PORT', 5001)))
