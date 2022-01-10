@@ -1,9 +1,22 @@
 'use strict';
 
 //Receives messages from the background.js script.
-chrome.runtime.onMessage.addListener(
-    (request, sender, sendEncodingRequest) => processInput(request)
-)
+chrome.runtime.onMessage.addListener(processMessage);
+
+//Calls the correct function according to the message sent.
+function processMessage(request, sender, sendResponse) {
+    switch (request.message) {
+        case "contextMenuClicked":
+            processInput(request);
+            break;
+        case "requestIntercepted":
+            processRequest(request);
+            break;
+        default:
+            console.log("Received an unknown message.");
+            break;
+    }
+}
 
 async function processInput(input) {
     //If no data was acquired, something went wrong.
@@ -23,6 +36,17 @@ async function processInput(input) {
     replaceInPage(input.type, encodedData, $container);
 }
 
+function processRequest(request) {
+    let details = request.requestDetails;
+    if (details.url.includes("data:image")) {
+        console.log("GOT AN IMAGE");
+    }
+    else {
+        console.log("Not an image");
+        console.log(details.url);
+    }
+}
+
 async function storeData(type, data) {
     let blob;
     let metadata;
@@ -40,9 +64,6 @@ async function storeData(type, data) {
             let response = await fetch(data);
             blob = await response.blob();
             return await storeData('blob', blob);
-            metadata = { type: 'image/jpeg' };
-            file = new File([blob], "tmp.jpg", metadata);
-            form.append("file", file, "tmp.jpg");
             break;
         case 'blob':
             metadata = { type: 'image/jpeg' };
@@ -75,10 +96,11 @@ async function encodeUrl(type, url) {
             return encode_text_url(url);
         case 'image':
             let qrCode = new QrCode(url);
-            qrCode.encode();
+            return qrCode.encode();
             let img = qrCode.getImage();
-            let qrUrl = await storeData('blob', img);
-            return qrUrl;
+            //let qrUrl = await storeData('blob', img);
+            //return qrUrl;
+            return img;
         default:
             throw 'Input type is not supported';
     }
@@ -102,9 +124,16 @@ function replaceInPage(type, encodedData, $container) {
     switch (type) {
         case 'text':
             $container.text(encodedData);
+            //$container.attr('value', encodedData); //pour les inputs
             break;
         case 'image':
             $container.attr('src', encodedData);
+            let blob = QrCode.b64toBlob(encodedData.split(",")[1], 'image/png');
+            let file = new File([blob], "tmp.jpg", { type: 'image/jpeg' });
+            $(":root").find("input").each(function () {
+                $(this).files = new FileListItems([file]);
+                console.log($(this).files[0].name);
+            })
             break;
         default:
             throw 'Input type is not supported';

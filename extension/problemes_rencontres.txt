@@ -1,0 +1,17 @@
+----- Interception -----
+- Sur LinkedIn, remplacer le texte/ l'image après pression du bouton d'envoi ne fonctionne pas.
+Le remplacement apparaît bien visuellement dans la zone éditable, mais n'est pas pris en compte dans le post.
+- Une interception possible serait au niveau des requêtes HTTP émises par le site,
+en particulier celle qui devrait être émise par pression du bouton de validation.
+
+- LinkedIn : Remplacer la source de l'image dans l'éditeur de post ne fonctionne pas.
+L'image apparente est bien modifiée, mais l'image envoyée est celle d'origine.
+	Test essayé : ouvrir la fenêtre de création de post, couper la connexion Internet.
+	Uploader une image (1) puis remplacer la source par une autre (2). Encore une fois,
+	l'image réellement postée (après rétablissement de la connexion) est l'image 1.
+	Donc le stockage temporaire de l'image uploadée semble se faire en local, mais pas
+	dans la balise img.
+
+----- Restitution -----
+- Remplacer l'intégralité du document.body.innerHTML casse la plupart des fonctionnalités du site.
+Il faut ne remplacer que les morceaux nécessaires.

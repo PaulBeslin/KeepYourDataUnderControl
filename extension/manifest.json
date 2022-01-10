@@ -7,6 +7,10 @@
         "contextMenus",
         "activeTab",
         "tabs",
+        "webRequest",
+        "webNavigation",
+        "webRequestBlocking",
+        "<all_urls>",
         "http://*/*",
         "https://*/*"
     ],

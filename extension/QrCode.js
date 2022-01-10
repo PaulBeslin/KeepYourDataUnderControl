@@ -6,7 +6,7 @@ class QrCode {
         this.qrCodeLink = qrCodeLink;
     }
     
-    b64toBlob(b64Data, contentType='', sliceSize=512){
+    static b64toBlob(b64Data, contentType='', sliceSize=512){
         const byteCharacters = atob(b64Data);
         const byteArrays = [];
       
@@ -41,7 +41,6 @@ class QrCode {
             return array;
     }
 
-
     encode(){
         //TODO replace the following encoding algorithm by using a js library
         if (this.link !== undefined) {
@@ -55,8 +54,9 @@ class QrCode {
                 modulesize: 8
             });
 
-            let base64Data =  qr.split(",")[1];
-            this.image = this.b64toBlob(base64Data,'image/png');
+            let base64Data = qr.split(",")[1];
+            this.image = QrCode.b64toBlob(base64Data, 'image/png');
+            return qr;
 
             /*
             let blobQr1 = new QRCode("qrCode", {

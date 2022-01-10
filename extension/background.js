@@ -1,9 +1,7 @@
-//If more context menus need to be created, another JSON key/value pair
-//could be used to provide information on which action is expected.
 function sendEncodingRequest(info, tab) {
     let dataType = undefined;
     let data = undefined;
-
+    
     //Process a text.
     if (info.selectionText) {
         dataType = "text"; //enum?
@@ -16,8 +14,17 @@ function sendEncodingRequest(info, tab) {
     }
     //Send captured data.
     chrome.tabs.sendMessage(tab.id, {
+        message: "contextMenuClicked",
         type: dataType,
         selection: data
+    });
+}
+
+function sendInterceptedHttpRequest(details) {
+    //Send captured request.
+    chrome.tabs.sendMessage(details.tabId, {
+        message: "requestIntercepted",
+        requestDetails: details
     });
 }
 
@@ -37,3 +44,8 @@ chrome.browserAction.onClicked.addListener(function (tab) {
         });
     });
 });
+
+chrome.webRequest.onBeforeRequest.addListener(
+    sendInterceptedHttpRequest,
+    { urls: ["<all_urls>"] }
+);
