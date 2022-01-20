@@ -21,11 +21,14 @@ function sendEncodingRequest(info, tab) {
 }
 
 function sendInterceptedHttpRequest(details) {
-    //Send captured request.
-    chrome.tabs.sendMessage(details.tabId, {
-        message: "requestIntercepted",
-        requestDetails: details
-    });
+    if(details.url.includes("feedshare-uploadedImage") && details.requestBody.error != undefined){
+        //Send captured request.
+        chrome.tabs.sendMessage(details.tabId, {
+            message: "requestIntercepted",
+            requestDetails: details
+        });
+        return {cancel: true};
+    }
 }
 
 //https://stackoverflow.com/a/61038472
@@ -47,5 +50,12 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 chrome.webRequest.onBeforeRequest.addListener(
     sendInterceptedHttpRequest,
-    { urls: ["<all_urls>"] }
+    { urls: ["<all_urls>"] },
+    ["requestBody", "blocking"]
 );
+/*
+chrome.webRequest.onBeforeSendHeaders.addListener(
+    sendInterceptedHttpRequest,
+    { urls: ["<all_urls>"] },
+    ["requestHeaders", "blocking"]
+);*/

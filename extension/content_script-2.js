@@ -38,12 +38,31 @@ async function processInput(input) {
 
 function processRequest(request) {
     let details = request.requestDetails;
-    if (details.url.includes("data:image")) {
-        console.log("GOT AN IMAGE");
-    }
-    else {
-        console.log("Not an image");
-        console.log(details.url);
+    if(details.url.includes("feedshare-uploadedImage")){
+        console.log(details);
+
+        const imgURL = chrome.extension.getURL("/IMTA_vert.png");
+        const img = $.get(imgURL).then(img => {
+            let form = new FormData();
+            form.append("file", img);
+            let settings = {
+                "url": details.url,
+                "method": "PUT",
+                "crossOrigin": true,
+                "processData": false,
+                "contentType": "image/png",
+                "data": img,
+                "async": false
+            };
+/*
+            const header = details.requestHeaders.find(header => header.name === 'Csrf-Token');
+            if(header != undefined){
+                const token = header.value;
+                settings['Csrf-Token'] = token;
+            }*/
+
+            $.ajax(settings);
+        });
     }
 }
 
@@ -83,7 +102,7 @@ async function storeData(type, data) {
         "processData": false,
         "mimeType": "multipart/form-data",
         "contentType": false,
-        "data": form, //????????????????????????????????????????????????
+        "data": form,
         "async": false
     };
     responseURL = await $.ajax(settings);

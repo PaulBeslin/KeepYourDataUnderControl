@@ -22,3 +22,5 @@ app.db
 demo-service/api/MainData
 demo-storage/files_db
 demo-storage/MainStorage
+extension/build
+extension/node_modules
