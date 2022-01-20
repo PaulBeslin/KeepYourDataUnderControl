@@ -34,6 +34,9 @@ def uploadResource():
     
     file = request.files['file']
     ownerId = request.form.get("owner_id")
+    site = request.form.get("site")
+    if (site == None or site == ""):
+        site = "all"
 
     if file.filename == '':
         abort(Response("Empty filename", 400))
@@ -47,14 +50,14 @@ def uploadResource():
     if extension == '.txt':
         with open(file_path) as file:
             text = file.read()
-            id = TextResourceService().addTextResource(text, ownerId)
+            id = ResourceService().addResource(text, ownerId, 2, site)
             if id != -1:
                 url = BASE_HOST + "/resource/" + str(id)
                 res = json.dumps({'url': url})
     if extension == '.jpg':
         with open(file_path, 'rb') as file:
             img = file.read()
-            id = ImageResourceService().addImageResource(img, ownerId)
+            id = ResourceService().addResource(img, ownerId, 1, site)
             if id != -1:
                 url = BASE_HOST + "/resource/" + str(id)
                 res= json.dumps({'url': url})

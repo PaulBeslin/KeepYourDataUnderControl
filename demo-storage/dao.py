@@ -3,8 +3,22 @@ from models import (
     db,
     ResourceIndex,
     TextResource,
-    ImageResource
+    ImageResource,
+    ResourceAccessSite
 )
+
+class ResourceAccessSiteDao:
+    def getResourceAccessSiteByResourceId(self, resourceId):
+        if (id == None) :
+            return None
+        return db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == resourceId).one_or_none()
+
+    def addResourceAccessSite(self, accessSite, resourceId):
+        resourceAccessSite = ResourceAccessSite(resource_id=resourceId, access_site=accessSite, created_time=datetime.now(), last_modified_time=datetime.now())
+        db.session.add(resourceAccessSite)
+        db.session.commit()
+        db.session.refresh(resourceAccessSite)
+        return resourceAccessSite.id
 
 class ResourceIndexDao:
     def getResourceIndex(self, id):

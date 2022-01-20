@@ -3,7 +3,8 @@ from config import BASE_HOST
 from dao import (
     TextResourceDao,
     ImageResourceDao,
-    ResourceIndexDao
+    ResourceIndexDao,
+    ResourceAccessSiteDao
 )
 
 class ResourceService:
@@ -24,7 +25,13 @@ class ResourceService:
         
         return res
 
-    def getResource(self, id):
+    def getResource(self, id, site=""):
+        accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
+        if (accessSite != None):
+            accessSite = accessSite.access_site.split(";")
+            print(accessSite)
+            if ("all" not in accessSite and site not in accessSite):
+                return "Sorry, you don't have permission to access this resource"
         resourceIndex = self.getResourceIndex(id)
         if (resourceIndex == None):
             return ""
@@ -33,22 +40,30 @@ class ResourceService:
         if (resourceIndex.data_type == 2):
             return TextResourceService().getTextResource(resourceIndex.resource_id)
 
+    def addResource(self, resource, ownerId, type, accessSite="all"):
+        if (type == 1):
+            id = ImageResourceService().addImageResource(resource)
+            id = ResourceIndexDao().addResourceIndex(ownerId, id, type)
+            ResourceAccessSiteDao().addResourceAccessSite(accessSite, id)
+            return id
+        elif (type == 2):
+            id = TextResourceService().addTextResource(resource)
+            id = ResourceIndexDao().addResourceIndex(ownerId, id, type)
+            ResourceAccessSiteDao().addResourceAccessSite(accessSite, id)
+            return id
+
 
 class ImageResourceService:
     def getImageResource(self, id):
         return ImageResourceDao().getResource(id)
     
-    def addImageResource(self, resource, ownerId):
-        id = ImageResourceDao().addImageResource(resource)
-        indexId = ResourceIndexDao().addResourceIndex(ownerId, id, 1)
-        return indexId
+    def addImageResource(self, resource):
+        return ImageResourceDao().addImageResource(resource)
 
 
 class TextResourceService:
     def getTextResource(self, id):
         return TextResourceDao().getResource(id)
     
-    def addTextResource(self, resource, ownerId):
-        id = TextResourceDao().addTextResource(resource)
-        indexId = ResourceIndexDao().addResourceIndex(ownerId, id, 2)
-        return indexId
+    def addTextResource(self, resource):
+        return TextResourceDao().addTextResource(resource)
