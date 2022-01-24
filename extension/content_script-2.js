@@ -43,6 +43,7 @@ function processRequest(request) {
 
         const imgURL = chrome.extension.getURL("/IMTA_vert.png");
         const img = $.get(imgURL).then(img => {
+            console.log(img);
             let form = new FormData();
             form.append("file", img);
             let settings = {
@@ -52,14 +53,21 @@ function processRequest(request) {
                 "processData": false,
                 "contentType": "image/png",
                 "data": img,
-                "async": false
+                "async": false,
+                "headers": {
+                    "doNotBlock": true
+                }
             };
-/*
-            const header = details.requestHeaders.find(header => header.name === 'Csrf-Token');
-            if(header != undefined){
-                const token = header.value;
-                settings['Csrf-Token'] = token;
-            }*/
+
+            const headersToAdd = ['Csrf-Token', 'media-type-family']
+
+            headersToAdd.forEach(h => {
+                const header = details.requestHeaders.find(header => header.name === h);
+                if(header != undefined){
+                    const token = header.value;
+                    settings['headers'][h] = token;
+                }
+            })
 
             $.ajax(settings);
         });

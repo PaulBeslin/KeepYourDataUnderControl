@@ -21,7 +21,7 @@ function sendEncodingRequest(info, tab) {
 }
 
 function sendInterceptedHttpRequest(details) {
-    if(details.url.includes("feedshare-uploadedImage") && details.requestBody.error != undefined){
+    if(details.url.includes("feedshare-uploadedImage") && details.requestHeaders.find(h => h.name === "doNotBlock") === undefined){
         //Send captured request.
         chrome.tabs.sendMessage(details.tabId, {
             message: "requestIntercepted",
@@ -47,15 +47,15 @@ chrome.browserAction.onClicked.addListener(function (tab) {
         });
     });
 });
-
+/*
 chrome.webRequest.onBeforeRequest.addListener(
     sendInterceptedHttpRequest,
     { urls: ["<all_urls>"] },
     ["requestBody", "blocking"]
-);
-/*
+);*/
+
 chrome.webRequest.onBeforeSendHeaders.addListener(
     sendInterceptedHttpRequest,
     { urls: ["<all_urls>"] },
     ["requestHeaders", "blocking"]
-);*/
+);
