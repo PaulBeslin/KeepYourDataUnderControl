@@ -1,4 +1,6 @@
+from crypt import methods
 import os
+import site
 
 from flask import (
     abort,
@@ -15,10 +17,11 @@ from service import (
     ImageResourceService
 )
 import json
-from config import BASE_HOST, UPLOAD_FOLDER
+from config import BASE_HOST, UPLOAD_FOLDER, DEFAULT_ACCSS_URL
 from werkzeug.utils import secure_filename
 import base64
 
+RESOURCE_SUFFIX = "/query/resource/"
 
 api = Blueprint('api', __name__, url_prefix="")
 
@@ -36,7 +39,7 @@ def uploadResource():
     ownerId = request.form.get("owner_id")
     site = request.form.get("site")
     if (site == None or site == ""):
-        site = "all"
+        site = DEFAULT_ACCSS_URL
 
     if file.filename == '':
         abort(Response("Empty filename", 400))
@@ -52,23 +55,35 @@ def uploadResource():
             text = file.read()
             id = ResourceService().addResource(text, ownerId, 2, site)
             if id != -1:
-                url = BASE_HOST + "/resource/" + str(id)
+                url = BASE_HOST + RESOURCE_SUFFIX + str(id)
                 res = json.dumps({'url': url})
     if extension == '.jpg':
         with open(file_path, 'rb') as file:
             img = file.read()
             id = ResourceService().addResource(img, ownerId, 1, site)
             if id != -1:
-                url = BASE_HOST + "/resource/" + str(id)
+                url = BASE_HOST + RESOURCE_SUFFIX + str(id)
                 res= json.dumps({'url': url})
     os.remove(file_path)
     return res
 
-@api.route('/resource/<id>')
-def getResource(id):
+@api.route(RESOURCE_SUFFIX + '<id>', methods=["GET"])
+def getResourcGet(id):
     resourceService = ResourceService()
     resourceIndex = resourceService.getResourceIndex(id)
-    resource = resourceService.getResource(id)
+    resource = resourceService.getResource(id, "all")
+    if (resourceIndex.data_type == 1):
+        resp = Response(resource, mimetype="image/jpeg")
+        return resp
+    if (resourceIndex.data_type == 2):
+        return jsonify(resource)
+
+@api.route(RESOURCE_SUFFIX + '<id>', methods=["POST"])
+def getResourcePost(id):
+    site = request.form.get("site")
+    resourceService = ResourceService()
+    resourceIndex = resourceService.getResourceIndex(id)
+    resource = resourceService.getResource(id, site=site)
     if (resourceIndex.data_type == 1):
         resp = Response(resource, mimetype="image/jpeg")
         return resp

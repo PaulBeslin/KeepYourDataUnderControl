@@ -1,5 +1,8 @@
+import re
 from typing import Text
-from config import BASE_HOST
+
+from sqlalchemy import false, true
+from config import BASE_HOST, DEFAULT_ACCSS_URL
 from dao import (
     TextResourceDao,
     ImageResourceDao,
@@ -27,30 +30,40 @@ class ResourceService:
 
     def getResource(self, id, site=""):
         accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
+        resourceIndex = self.getResourceIndex(id)
+        permitted = true
         if (accessSite != None):
             accessSite = accessSite.access_site.split(";")
-            print(accessSite)
-            if ("all" not in accessSite and site not in accessSite):
-                return "Sorry, you don't have permission to access this resource"
-        resourceIndex = self.getResourceIndex(id)
+            # print(accessSite)
+            if (DEFAULT_ACCSS_URL not in accessSite and site not in accessSite):
+                permitted = false
         if (resourceIndex == None):
             return ""
         if (resourceIndex.data_type == 1):
-            return ImageResourceService().getImageResource(resourceIndex.resource_id)
+            if (permitted == true):
+                return ImageResourceService().getImageResource(resourceIndex.resource_id)
+            else:
+                img = ""
+                # return an image for information
+                with open("config/no_permission.png", 'rb') as file:
+                    img = file.read()
+                return img
         if (resourceIndex.data_type == 2):
-            return TextResourceService().getTextResource(resourceIndex.resource_id)
+            if (permitted == true):
+                return TextResourceService().getTextResource(resourceIndex.resource_id)
+            else:
+                return "Sorry, you don't have permission to access this resource"
 
     def addResource(self, resource, ownerId, type, accessSite="all"):
+        id = -1
         if (type == 1):
             id = ImageResourceService().addImageResource(resource)
             id = ResourceIndexDao().addResourceIndex(ownerId, id, type)
-            ResourceAccessSiteDao().addResourceAccessSite(accessSite, id)
-            return id
         elif (type == 2):
             id = TextResourceService().addTextResource(resource)
             id = ResourceIndexDao().addResourceIndex(ownerId, id, type)
-            ResourceAccessSiteDao().addResourceAccessSite(accessSite, id)
-            return id
+        ResourceAccessSiteDao().addResourceAccessSite(accessSite, id)
+        return id
 
 
 class ImageResourceService:
