@@ -28,6 +28,15 @@ class ResourceService:
         
         return res
 
+    def doGetResource(self, id):
+        resourceIndex = self.getResourceIndex(id)
+        if (resourceIndex == None):
+            return ""
+        if (resourceIndex.data_type == 1):
+            return ImageResourceService().getImageResource(resourceIndex.resource_id)
+        if (resourceIndex.data_type == 2):
+            return TextResourceService().getTextResource(resourceIndex.resource_id)
+
     def getResource(self, id, site=""):
         accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
         resourceIndex = self.getResourceIndex(id)

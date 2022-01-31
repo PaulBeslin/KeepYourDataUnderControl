@@ -1,10 +1,7 @@
-from crypt import methods
 import os
-import site
 
 from flask import (
     abort,
-    Flask,
     Blueprint,
     json,
     jsonify,
@@ -13,13 +10,10 @@ from flask import (
 )
 from service import (
     ResourceService,
-    TextResourceService,
-    ImageResourceService
 )
 import json
 from config import BASE_HOST, UPLOAD_FOLDER, DEFAULT_ACCSS_URL
 from werkzeug.utils import secure_filename
-import base64
 
 RESOURCE_SUFFIX = "/query/resource/"
 
@@ -71,7 +65,7 @@ def uploadResource():
 def getResourcGet(id):
     resourceService = ResourceService()
     resourceIndex = resourceService.getResourceIndex(id)
-    resource = resourceService.getResource(id, "all")
+    resource = resourceService.doGetResource(id)
     if (resourceIndex.data_type == 1):
         resp = Response(resource, mimetype="image/jpeg")
         return resp
