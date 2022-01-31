@@ -31,6 +31,15 @@ async function processInput(input) {
 }
 
 async function storeData(type, data) {
+    /*
+        Data sent to the database:
+        {
+            'file': File,
+            'site': string
+        }
+        where 'file' is either a .png or a .txt
+    */
+
     let blob;
     let metadata;
     let file;
@@ -58,9 +67,7 @@ async function storeData(type, data) {
             throw 'Input type is not supported';
     }
 
-    //form.append("site", location.host);
-
-    //console.log(form);
+    form.append("site", location.host);
 
     let settings = {
         // This url need to be changed to your own self storage
