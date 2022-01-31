@@ -57,6 +57,11 @@ async function storeData(type, data) {
         default:
             throw 'Input type is not supported';
     }
+
+    //form.append("site", location.host);
+
+    //console.log(form);
+
     let settings = {
         // This url need to be changed to your own self storage
         "url": "http://localhost:5001/",
@@ -66,7 +71,7 @@ async function storeData(type, data) {
         "processData": false,
         "mimeType": "multipart/form-data",
         "contentType": false,
-        "data": form, //????????????????????????????????????????????????
+        "data": form,
         "async": false
     };
     responseURL = await $.ajax(settings);
