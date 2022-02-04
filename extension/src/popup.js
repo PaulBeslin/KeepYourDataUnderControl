@@ -18,10 +18,15 @@ function launch(){
 
 
     $("#filePicker").on("change", e => {
+        console.log("BEFORE Data Transfer",e.target.files)
+
+        e.target.files = new DataTransfer().files;
+        
+        console.log("AFTER Data Transfer",e.target.files)
         currentFile = e.target.files[0];
         $("#pickedFile").html(currentFile.name);
         $("#encodeFile").attr("disabled",false);
-    })
+    });
 
 
     $("#encodeFile").on("click",e=>{

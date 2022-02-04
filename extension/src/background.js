@@ -31,3 +31,13 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.onClicked.addListener(sendEncodingRequest);
+
+
+//fetch(`https://www.linkedin.com/feed/`)
+
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        if (request.type) {
+            console.log('hello received', request.type);
+        }
+    });

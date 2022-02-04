@@ -28,16 +28,14 @@
     "http://*/*",
     "https://*/*"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "run_at": "document_idle",
-      "js": [
-        "contentScript.js"
-      ]
-    }
-  ]
+  "content_scripts": [{
+    "matches": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "run_at": "document_start",
+    "js": [
+      "contentScript.js"
+    ]
+  }]
 }

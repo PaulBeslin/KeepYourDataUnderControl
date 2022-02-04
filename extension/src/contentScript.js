@@ -1,12 +1,107 @@
 'use strict';
-import $ from "jquery";
-import { replace_urls_async } from "./text_encoding";
+var $ = require("jquery")
+import {
+  replace_urls_async
+} from "./text_encoding";
 const {
   default: Qrcode
 } = require("./QrCode");
+import QrCode from './QrCode';
 require("./contentScript_2");
 
-$(window).on("load", function () {
+
+$(window).on("load", async function () {
+
+  window.addEventListener("message", (event) => {
+
+    if (event.source != window)
+      return;
+
+    if (event.data.type && event.data.type == "Encode_Image") {
+
+      //Preparing Reuest Params
+      let form = new FormData();
+      form.append("file", event.data.file, "qrCode.jpg");
+      let settings = {
+        // This url need to be changed to your own self storage
+        "url": "http://localhost:5001/",
+        "method": "POST",
+        "timeout": 0,
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form,
+      };
+
+      //Launching Encoding Reuest
+      $.ajax(settings).done(function (response) {
+
+        //Image Encoding
+        const responseJson = JSON.parse(response);
+        
+        const qrCode = new QrCode(responseJson.url);
+        qrCode.encode();
+
+        const data = qrCode.getImage();
+        
+        //Image Replacement
+        const finalFile = new File([data], 'qrCode.jpg', {type: 'image/jpg'});
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(finalFile);
+        document.querySelector('input[type=file]').files = dataTransfer.files;
+
+      });
+
+    }
+  }, false);
+
+  async function script() {
+
+    // your main code here
+    Element.prototype._addEventListener = Element.prototype.addEventListener;
+    Element.prototype.addEventListener = function (a, b, c) {
+      if (c == undefined) c = false;
+
+      if (this.nodeName.toLowerCase() == 'input' && this.type.toLowerCase() == "file" && a == "change" && (!this.eventListenerList || !this.eventListenerList.change)) {
+
+        if (!this.eventListenerList) this.eventListenerList = {};
+        this.eventListenerList[a] = [];
+
+        this.addEventListener("change", e => {
+
+          window.postMessage({
+            type: "Encode_Image",
+            file: e.target.files[0],
+          }, "*");
+
+          setTimeout(() => {
+            document.querySelector('input[type=file]').eventListenerList.change[1].listener(e);
+          }, 1000);
+
+        }, false);
+
+      } else {
+        this._addEventListener(a, b, c);
+      }
+
+      if (!this.eventListenerList) this.eventListenerList = {};
+      if (!this.eventListenerList[a]) this.eventListenerList[a] = [];
+      this.eventListenerList[a].push({
+        listener: b,
+        options: c
+      });
+    };
+
+  }
+
+  function inject(fn) {
+    var doc = window.top.document;
+    const script = doc.createElement('script')
+    script.text = `(${fn.toString()})();`
+    doc.documentElement.appendChild(script);
+  }
+
+  inject(script);
 
 
   // Image Handler
