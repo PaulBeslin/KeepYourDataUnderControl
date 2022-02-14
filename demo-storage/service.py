@@ -13,23 +13,16 @@ from dao import (
 )
 
 class ResourceService:
+    def getAll(self):
+        resourceIndexList = ResourceIndexDao().getAll()
+        return self.generateList(resourceIndexList)
+
     def getResourceIndex(self, id):
         return ResourceIndexDao().getForceResourceIndex(id)
 
     def getResourceByOwnerId(self, ownerId):
         resourceIndexList = ResourceIndexDao().getResourceIndexListByOwnerId(ownerId)
-        res = []
-        for resourceIndex in resourceIndexList:
-            resource = self.getResource(resourceIndex.resource_id)
-            url = BASE_HOST + RESOURCE_SUFFIX + str(resourceIndex.id)
-            resource = {"type": "", "data": url, "id": resourceIndex.id}
-            if resourceIndex.data_type == 1:
-                resource["type"] = "image"
-            elif resourceIndex.data_type == 2:
-                resource["type"] = "text"
-            res.append(resource)
-        
-        return res
+        return self.generateList(resourceIndexList)
 
     def getResource(self, id, site=""):
         accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
@@ -72,6 +65,21 @@ class ResourceService:
 
     def removeResource(self, id):
         ResourceIndexDao().removeResource(id)
+
+    def generateList(self, resourceIndexList):
+        res = []
+        for resourceIndex in resourceIndexList:
+            resource = self.getResource(resourceIndex.resource_id)
+            url = BASE_HOST + RESOURCE_SUFFIX + str(resourceIndex.id)
+            resource = {"type": "", "data": url, "id": resourceIndex.id}
+            if resourceIndex.data_type == 1:
+                resource["type"] = "image"
+            elif resourceIndex.data_type == 2:
+                resource["type"] = "text"
+            res.append(resource)
+        
+        return res
+
 
 class ImageResourceService:
     def getImageResource(self, id):

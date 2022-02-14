@@ -23,6 +23,9 @@ class ResourceAccessSiteDao:
         return resourceAccessSite.id
 
 class ResourceIndexDao:
+    def getAll(self):
+        return db.session.query(ResourceIndex).filter(ResourceIndex.status == 1).all()
+
     def getResourceIndex(self, id):
         if (id == None):
             return None

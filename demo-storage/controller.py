@@ -23,6 +23,11 @@ api = Blueprint('api', __name__, url_prefix="")
 def homePage():
     return "Lucky You! This is da home page"
 
+@api.route('/all/', methods=['GET'])
+def getAll():
+    resourceList = ResourceService().getAll()
+    return jsonify(resourceList)
+
 @api.route('/', methods=['POST'])
 def uploadResource():
     if 'file' not in request.files:
