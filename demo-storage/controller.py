@@ -88,7 +88,7 @@ def getResourcePost(id):
     if (resourceIndex.data_type == 2):
         return jsonify(resource)
 
-@api.route('/remove/', methods=["POST"])
+@api.route('/remove/', methods=["DELETE"])
 def removeResource():
     id = request.form.get("id")
     resourceService = ResourceService()
