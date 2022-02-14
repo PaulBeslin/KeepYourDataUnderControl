@@ -1,3 +1,4 @@
+from email.policy import default
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.sqlite import BLOB
 from werkzeug.utils import secure_filename
@@ -20,17 +21,18 @@ class ResourceIndex(db.Model):
     created_time = db.Column(db.DateTime())
     owner_id = db.Column(db.Integer)
     last_modified_time = db.Column(db.DateTime())
+    status = db.Column(db.Integer, default=1)
 
 class TextResource(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     resource = db.Column(db.String())
-    status = db.Column(db.Integer)
+    status = db.Column(db.Integer, default=1)
     created_time = db.Column(db.DateTime())
     last_modified_time = db.Column(db.DateTime())
 
 class ImageResource(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     resource = db.Column(BLOB)
-    status = db.Column(db.Integer)
+    status = db.Column(db.Integer, default=1)
     created_time = db.Column(db.DateTime())
     last_modified_time = db.Column(db.DateTime())

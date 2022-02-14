@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 
 from flask import (
@@ -12,10 +13,8 @@ from service import (
     ResourceService,
 )
 import json
-from config import BASE_HOST, UPLOAD_FOLDER, DEFAULT_ACCSS_URL
+from config import BASE_HOST, UPLOAD_FOLDER, DEFAULT_ACCSS_URL, RESOURCE_SUFFIX
 from werkzeug.utils import secure_filename
-
-RESOURCE_SUFFIX = "/query/resource/"
 
 api = Blueprint('api', __name__, url_prefix="")
 
@@ -65,7 +64,7 @@ def uploadResource():
 def getResourcGet(id):
     resourceService = ResourceService()
     resourceIndex = resourceService.getResourceIndex(id)
-    resource = resourceService.doGetResource(id)
+    resource = resourceService.getResource(id)
     if (resourceIndex.data_type == 1):
         resp = Response(resource, mimetype="image/jpeg")
         return resp
@@ -83,6 +82,13 @@ def getResourcePost(id):
         return resp
     if (resourceIndex.data_type == 2):
         return jsonify(resource)
+
+@api.route('/remove/', methods=["POST"])
+def removeResource():
+    id = request.form.get("id")
+    resourceService = ResourceService()
+    resourceService.removeResource(id)
+    return jsonify({"status":"ok"})
     
 @api.route('/owner/<id>')
 def getResourceByOwnerId(id):
