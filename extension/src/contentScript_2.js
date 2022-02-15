@@ -31,6 +31,15 @@ async function processInput(input) {
 }
 
 async function storeData(type, data) {
+    /*
+        Data sent to the database:
+        {
+            'file': File,
+            'site': string
+        }
+        where 'file' is either a .png or a .txt
+    */
+
     let blob;
     let metadata;
     let file;
@@ -57,6 +66,9 @@ async function storeData(type, data) {
         default:
             throw 'Input type is not supported';
     }
+
+    form.append("site", location.host);
+
     let settings = {
         // This url need to be changed to your own self storage
         "url": "http://localhost:5001/",
@@ -66,7 +78,7 @@ async function storeData(type, data) {
         "processData": false,
         "mimeType": "multipart/form-data",
         "contentType": false,
-        "data": form, //????????????????????????????????????????????????
+        "data": form,
         "async": false
     };
     responseURL = await $.ajax(settings);
