@@ -41,3 +41,7 @@ chrome.runtime.onMessage.addListener(
             console.log('hello received', request.type);
         }
     });
+
+chrome.browserAction.onClicked.addListener(function () {
+    chrome.tabs.create({ url: chrome.runtime.getURL("manage.html") });
+});
