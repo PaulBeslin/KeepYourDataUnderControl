@@ -32,12 +32,11 @@ chrome.contextMenus.create({
 
 chrome.contextMenus.onClicked.addListener(sendEncodingRequest);
 
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    console.log("PAGE UPDATED");
+    var title = changeInfo.title;
 
-//fetch(`https://www.linkedin.com/feed/`)
-
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.type) {
-            console.log('hello received', request.type);
-        }
-    });
+    if (title !== undefined) {
+        console.log("REALLY UPDATED");
+    }
+})

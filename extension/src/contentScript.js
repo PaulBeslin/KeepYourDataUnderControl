@@ -22,86 +22,132 @@ $(window).on("load", async function () {
       //Preparing Reuest Params
       let form = new FormData();
       form.append("file", event.data.file, "qrCode.jpg");
-      let settings = {
-        // This url need to be changed to your own self storage
-        "url": "http://localhost:5001/",
-        "method": "POST",
-        "timeout": 0,
-        "processData": false,
-        "mimeType": "multipart/form-data",
-        "contentType": false,
-        "data": form,
-      };
 
       //Launching Encoding Reuest
-      $.ajax(settings).done(function (response) {
+      $.ajax({
+          // This url need to be changed to your own self storage
+          "url": "http://localhost:5001/",
+          "method": "POST",
+          "timeout": 0,
+          "processData": false,
+          "mimeType": "multipart/form-data",
+          "contentType": false,
+          "data": form,
+        })
+        .done((response) => {
 
-        //Image Encoding
-        const responseJson = JSON.parse(response);
-        
-        const qrCode = new QrCode(responseJson.url);
-        qrCode.encode();
+          //Image Encoding
+          const responseJson = JSON.parse(response);
 
-        const data = qrCode.getImage();
-        
-        //Image Replacement
-        const finalFile = new File([data], 'qrCode.jpg', {type: 'image/jpg'});
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(finalFile);
-        document.querySelector('input[type=file]').files = dataTransfer.files;
+          const qrCode = new QrCode(responseJson.url);
+          qrCode.encode();
 
-      });
+          const data = qrCode.getImage();
 
+          //Image Replacement
+          const finalFile = new File([data], 'qrCode.jpg', {
+            type: 'image/jpg'
+          });
+
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(finalFile);
+          document.querySelector('input[type=file]').files = dataTransfer.files;
+
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+          console.log("Image Encoding Failed");
+        })
     }
   }, false);
 
   async function script() {
-
     // your main code here
     Element.prototype._addEventListener = Element.prototype.addEventListener;
     Element.prototype.addEventListener = function (a, b, c) {
       if (c == undefined) c = false;
 
-      if (this.nodeName.toLowerCase() == 'input' && this.type.toLowerCase() == "file" && a == "change" && (!this.eventListenerList || !this.eventListenerList.change)) {
+      if (!this.eventListenerList) this.eventListenerList = {};
+      if (!this.eventListenerList[a]) this.eventListenerList[a] = [];
 
-        if (!this.eventListenerList) this.eventListenerList = {};
-        this.eventListenerList[a] = [];
+      if (a == "change") {
 
-        this.addEventListener("change", e => {
+        let eventListener = e => {
 
-          window.postMessage({
-            type: "Encode_Image",
-            file: e.target.files[0],
-          }, "*");
+          if ((this.nodeName.toLowerCase() == 'input' && this.type.toLowerCase() == "file") || (this.querySelector('input[type=file]'))) {
 
-          setTimeout(() => {
-            document.querySelector('input[type=file]').eventListenerList.change[1].listener(e);
-          }, 1000);
+            window.postMessage({
+              type: "Encode_Image",
+              file: e.target.files[0]
+            }, "*");
 
-        }, false);
+            setTimeout(() => {
+              this.eventListenerList.change[1].listener(e);
+            }, 1000);
+
+          } else {
+            this.eventListenerList.change[1].listener(e);
+          }
+        }
+
+        this._addEventListener(a, eventListener, c);
+        this.eventListenerList[a].push({
+          listener: eventListener,
+          options: c
+        });
+
+        this.eventListenerList[a].push({
+          listener: b,
+          options: c
+        });
 
       } else {
         this._addEventListener(a, b, c);
+        this.eventListenerList[a].push({
+          listener: b,
+          options: c
+        });
       }
-
-      if (!this.eventListenerList) this.eventListenerList = {};
-      if (!this.eventListenerList[a]) this.eventListenerList[a] = [];
-      this.eventListenerList[a].push({
-        listener: b,
-        options: c
-      });
     };
-
   }
 
   function inject(fn) {
     var doc = window.top.document;
-    const script = doc.createElement('script')
+    const script = doc.createElement('script');
     script.text = `(${fn.toString()})();`
     doc.documentElement.appendChild(script);
   }
 
   inject(script);
+
+
+  //Mutation Observer
+  const targetNode = document.body;
+  const config = {
+    childList: true,
+    subtree: true
+  };
+
+  let INJECTED = false;
+  const callback = function (mutationsList, observer) {
+
+    if (!INJECTED && mutationsList.length > 0 && document.querySelector('input[type=file]')) {
+      async function script_3() {
+        console.log("INJECTED 3");
+        let currentNode = window.top.document.querySelector('input[type=file]');
+        let currentListener = document.querySelector('input[type=file]').onchange;
+        if (currentListener) {
+          currentNode.onchange = null;
+          currentNode.addEventListener("change", currentListener, false);
+        }
+      }
+
+      inject(script_3);
+    }
+  };
+
+  const observer = new MutationObserver(callback);
+  observer.observe(targetNode, config);
+
 
 
   // Image Handler
