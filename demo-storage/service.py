@@ -1,9 +1,3 @@
-from genericpath import exists
-from os import remove
-import re
-from typing import Text
-
-from sqlalchemy import false, true
 from config import BASE_HOST, DEFAULT_ACCSS_URL, RESOURCE_SUFFIX
 from dao import (
     TextResourceDao,
@@ -23,6 +17,28 @@ class ResourceService:
     def getResourceByOwnerId(self, ownerId):
         resourceIndexList = ResourceIndexDao().getResourceIndexListByOwnerId(ownerId)
         return self.generateList(resourceIndexList)
+
+    def doGetResource(self, id):
+        resourceIndex = self.getResourceIndex(id)
+        if (resourceIndex == None):
+            return ""
+        
+        exist = resourceIndex.status != 0
+        if (resourceIndex.data_type == 1):
+            if (exist == True):
+                return ImageResourceService().getImageResource(resourceIndex.resource_id)
+            else:
+                img = ""
+                # return an image for information
+                with open("config/no_permission.png", 'rb') as file:
+                    img = file.read()
+                return img
+        if (resourceIndex.data_type == 2):
+            if (exist == True):
+                return TextResourceService().getTextResource(resourceIndex.resource_id)
+            else:
+                return "Sorry, you don't have permission to access this resource"
+
 
     def getResource(self, id, site=""):
         accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)

@@ -68,7 +68,7 @@ def uploadResource():
 def getResourcGet(id):
     resourceService = ResourceService()
     resourceIndex = resourceService.getResourceIndex(id)
-    resource = resourceService.getResource(id)
+    resource = resourceService.doGetResource(id)
     if (resourceIndex.data_type == 1):
         resp = Response(resource, mimetype="image/jpeg")
         return resp
