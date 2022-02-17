@@ -19,15 +19,14 @@ function removeData(dataId, htmlFrame){
     htmlFrame.remove();
 
     //Remove the data from the database.
-    let body = new FormData();
-    body.append("id", dataId);
+    let body = JSON.stringify({"id": dataId});
     $.ajax({
         type: "DELETE",
         url: DELETE_URL,
         data: body,
-        processData: false
+        dataType: "json"
       })
-        .then(res => {console.log("SUCCESS")});
+        .then(_ => {console.log("SUCCESS")});
 }
 
 /**
