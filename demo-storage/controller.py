@@ -89,7 +89,8 @@ def getResourcePost(id):
 
 @api.route('/remove/', methods=["DELETE"])
 def removeResource():
-    id = request.form.get("id")
+    data = json.loads(request.get_data())
+    id = data.get("id")
     resourceService = ResourceService()
     resourceService.removeResource(id)
     return jsonify({"status":"ok"})
