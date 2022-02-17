@@ -16,6 +16,7 @@ class ResourceAccessSite(db.Model):
 
 class ResourceIndex(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    uuid = db.Column(db.String())
     data_type = db.Column(db.Integer)
     resource_id = db.Column(db.Integer)
     created_time = db.Column(db.DateTime())

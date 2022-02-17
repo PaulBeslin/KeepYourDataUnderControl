@@ -12,7 +12,7 @@ class ResourceService:
         return self.generateList(resourceIndexList)
 
     def getResourceIndex(self, id):
-        return ResourceIndexDao().getForceResourceIndex(id)
+        return ResourceIndexDao().getForceResourceIndexByUUID(id)
 
     def getResourceByOwnerId(self, ownerId):
         resourceIndexList = ResourceIndexDao().getResourceIndexListByOwnerId(ownerId)
@@ -80,14 +80,14 @@ class ResourceService:
         return id
 
     def removeResource(self, id):
-        ResourceIndexDao().removeResource(id)
+        ResourceIndexDao().removeResourceByUUID(id)
 
     def generateList(self, resourceIndexList):
         res = []
         for resourceIndex in resourceIndexList:
             resource = self.getResource(resourceIndex.resource_id)
-            url = BASE_HOST + RESOURCE_SUFFIX + str(resourceIndex.id)
-            resource = {"type": "", "data": url, "id": resourceIndex.id}
+            url = BASE_HOST + RESOURCE_SUFFIX + str(resourceIndex.uuid)
+            resource = {"type": "", "data": url, "id": resourceIndex.uuid}
             if resourceIndex.data_type == 1:
                 resource["type"] = "image"
             elif resourceIndex.data_type == 2:

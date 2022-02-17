@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 from models import (
     db,
     ResourceIndex,
@@ -24,6 +25,17 @@ class ResourceIndexDao:
     def getAll(self):
         return db.session.query(ResourceIndex).filter(ResourceIndex.status == 1).all()
 
+    def getResourceIndexByUUID(self, uuid):
+        if (uuid == None):
+            return None
+        return db.session.query(ResourceIndex).filter(ResourceIndex.uuid == uuid).filter(ResourceIndex.status == 1).one_or_none()
+
+    def getForceResourceIndexByUUID(self, uuid):
+        if (uuid == None):
+            return None
+        return db.session.query(ResourceIndex).filter(ResourceIndex.uuid == uuid).one_or_none()
+
+
     def getResourceIndex(self, id):
         if (id == None):
             return None
@@ -40,11 +52,23 @@ class ResourceIndexDao:
         return db.session.query(ResourceIndex).filter(ResourceIndex.owner_id == ownerId).filter(ResourceIndex.status == 1).all()
 
     def addResourceIndex(self, ownerId, resourceId, type):
-        resourceIndex = ResourceIndex(resource_id=resourceId, owner_id=ownerId, data_type=type, created_time=datetime.now(), last_modified_time=datetime.now(), status=1)
+        uuidstr = str(uuid.uuid4())
+        resourceIndex = ResourceIndex(resource_id=resourceId, uuid=uuidstr, owner_id=ownerId, data_type=type, created_time=datetime.now(), last_modified_time=datetime.now(), status=1)
         db.session.add(resourceIndex)
         db.session.commit()
-        db.session.refresh(resourceIndex)
-        return resourceIndex.id
+        # db.session.refresh(resourceIndex)
+        return uuidstr
+
+    def removeResourceByUUID(self, uuid):
+        index = db.session.query(ResourceIndex).filter(ResourceIndex.uuid == uuid).filter(ResourceIndex.status == 1).one_or_none()
+        if (index == None):
+            return
+        if (index.data_type == 1):
+            ImageResourceDao().removeResource(index.resource_id)
+        if (index.data_type == 2):
+            TextResourceDao().removeResource(index.resource_id)
+        db.session.query(ResourceIndex).filter(ResourceIndex.uuid == uuid).filter(ResourceIndex.status == 1).update({"status":0}, synchronize_session=False)
+        db.session.commit()
     
     def removeResource(self, id):
         index = db.session.query(ResourceIndex).filter(ResourceIndex.id == id).filter(ResourceIndex.status == 1).one_or_none()
