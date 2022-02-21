@@ -25,7 +25,6 @@ class ResourceAccessSiteDao:
         record = db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).one_or_none()
         if (record == None):
             return
-        print(accessSite)
         db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"access_site": accessSite}, synchronize_session=False)
         db.session.commit()
 
