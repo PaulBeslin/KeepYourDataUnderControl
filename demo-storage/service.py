@@ -41,16 +41,14 @@ class ResourceService:
 
 
     def getResource(self, id, site=""):
-        accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
         resourceIndex = self.getResourceIndex(id)
         if (resourceIndex == None):
             return ""
-        
+        accessSiteList = ResourceAccessSiteService().getAccessSiteListByIndexId(id)
         permitted = True
         exist = resourceIndex.status != 0
-        if (accessSite != None):
-            accessSite = accessSite.access_site.split(";")
-            if ((DEFAULT_ACCSS_URL not in accessSite) and (site not in accessSite)):
+        if (accessSiteList != None):
+            if ((DEFAULT_ACCSS_URL not in accessSiteList) and (site not in accessSiteList)):
                 permitted = False
  
         if (resourceIndex.data_type == 1):
@@ -76,18 +74,20 @@ class ResourceService:
         elif (type == 2):
             id = TextResourceService().addTextResource(resource)
             id = ResourceIndexDao().addResourceIndex(ownerId, id, type)
-        ResourceAccessSiteDao().addResourceAccessSite(accessSite, id)
+        ResourceAccessSiteService().createAccessSite(accessSite, id)
         return id
 
     def removeResource(self, id):
         ResourceIndexDao().removeResourceByUUID(id)
+        ResourceAccessSiteService().removeAccessSiteByIndexId(id)
 
     def generateList(self, resourceIndexList):
         res = []
         for resourceIndex in resourceIndexList:
-            resource = self.getResource(resourceIndex.resource_id)
-            url = BASE_HOST + RESOURCE_SUFFIX + str(resourceIndex.uuid)
-            resource = {"type": "", "data": url, "id": resourceIndex.uuid}
+            indexId = str(resourceIndex.uuid)
+            accessSiteList = ResourceAccessSiteService().getAccessSiteListByIndexId(indexId)
+            url = BASE_HOST + RESOURCE_SUFFIX + indexId
+            resource = {"type": "", "data": url, "id": indexId, "accessSiteList": accessSiteList}
             if resourceIndex.data_type == 1:
                 resource["type"] = "image"
             elif resourceIndex.data_type == 2:
@@ -117,3 +117,22 @@ class TextResourceService:
 
     def removeResource(self, id):
         TextResourceDao().removeResource(id)
+
+
+class ResourceAccessSiteService:
+    def getAccessSiteListByIndexId(self, id):
+        accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
+        accessList = []
+        if (accessSite != None):
+            accessList = accessSite.access_site.split(";")
+        return accessList
+    
+    def updateAccessSiteByIndexId(self, indexId, site):
+        accessSite = ";".join(site)
+        ResourceAccessSiteDao().updateResourceAccessSite(accessSite=accessSite, indexId=indexId)
+
+    def createAccessSite(self, accessSite, indexId):
+        ResourceAccessSiteDao().addResourceAccessSite(accessSite=accessSite, indexId=indexId)
+
+    def removeAccessSiteByIndexId(self, indexId):
+        ResourceAccessSiteDao().removeResourceAccessSite(indexId==indexId)

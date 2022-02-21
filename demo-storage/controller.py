@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 
 from flask import (
@@ -10,6 +11,7 @@ from flask import (
 )
 from service import (
     ResourceService,
+    ResourceAccessSiteService
 )
 import json
 from config import BASE_HOST, UPLOAD_FOLDER, DEFAULT_ACCSS_URL, RESOURCE_SUFFIX
@@ -100,3 +102,11 @@ def getResourceByOwnerId(id):
     # return an array of resource 
     resourceList = ResourceService().getResourceByOwnerId(id)
     return jsonify(resourceList)
+
+@api.route("/updateAcl", methods=["POST"])
+def updateAccessList():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    accessSite = data.get("access_site")
+    ResourceAccessSiteService().updateAccessSiteByIndexId(indexId=id, site=accessSite)
+    return jsonify({"status": "ok"})

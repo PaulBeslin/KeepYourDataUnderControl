@@ -9,17 +9,32 @@ from models import (
 )
 
 class ResourceAccessSiteDao:
-    def getResourceAccessSiteByResourceId(self, resourceId):
+    def getResourceAccessSiteByResourceId(self, indexId):
         if (id == None) :
             return None
-        return db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == resourceId).one_or_none()
+        return db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).one_or_none()
 
-    def addResourceAccessSite(self, accessSite, resourceId):
-        resourceAccessSite = ResourceAccessSite(resource_id=resourceId, access_site=accessSite, created_time=datetime.now(), last_modified_time=datetime.now())
+    def addResourceAccessSite(self, accessSite, indexId):
+        resourceAccessSite = ResourceAccessSite(resource_id=indexId, access_site=accessSite, created_time=datetime.now(), last_modified_time=datetime.now(), status=1)
         db.session.add(resourceAccessSite)
         db.session.commit()
         db.session.refresh(resourceAccessSite)
         return resourceAccessSite.id
+
+    def updateResourceAccessSite(self, accessSite, indexId):
+        record = db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).one_or_none()
+        if (record == None):
+            return
+        print(accessSite)
+        db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"access_site": accessSite}, synchronize_session=False)
+        db.session.commit()
+
+    def removeResourceAccessSite(self, indexId):
+        accessSite = db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).one_or_none()
+        if (accessSite == None):
+            return
+        db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"status": 0}, synchronize_session=False)
+        db.session.commit()
 
 class ResourceIndexDao:
     def getAll(self):

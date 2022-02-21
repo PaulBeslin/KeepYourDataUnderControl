@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a10e25cb-3593-46f8-a202-77de7b86e5f2",
+		"_postman_id": "d8127214-1058-4ade-895a-c6d419f97a1c",
 		"name": "Projet3A",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -20,7 +20,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:5001/query/resource/3",
+				"url": "http://localhost:5001/query/resource/ec609f52-3f9d-46a6-baf9-576368cc3d14",
 				"description": "Get the resource by Id. Probably will return an image."
 			},
 			"response": []
@@ -70,13 +70,31 @@
 					"formdata": [
 						{
 							"key": "id",
-							"value": "1",
+							"value": "ef6a32e4-0c6e-4b0a-a438-8256f93beb0b",
 							"type": "text"
 						}
 					]
 				},
 				"url": "http://localhost:5001/remove",
 				"description": "Delete a resource by Id\n\nReturn value:\n\n``` json\n{\n    \"status\": \"ok\"\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateAcl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"ec609f52-3f9d-46a6-baf9-576368cc3d14\",\n    \"access_site\": [\n        \"www.google.com\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:5001/updateAcl"
 			},
 			"response": []
 		}
