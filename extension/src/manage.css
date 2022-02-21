@@ -1,3 +1,9 @@
+#dataGrid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+
 .data-container{
     position: relative;
     height: 200px;

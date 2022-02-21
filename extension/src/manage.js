@@ -127,7 +127,7 @@ function createDataContainer(data){
 
 
 
-
+const gridElement = document.getElementById("dataGrid");
 
 $.ajax({
     type: "GET",
@@ -136,7 +136,7 @@ $.ajax({
 })
     .then(dataList => {
         dataList.forEach(data => {
-            document.body.appendChild(createDataContainer(data));
+            gridElement.appendChild(createDataContainer(data));
         })
     });
 
