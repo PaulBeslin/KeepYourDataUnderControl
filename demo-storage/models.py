@@ -13,6 +13,7 @@ class ResourceAccessSite(db.Model):
     access_site = db.Column(db.String())
     created_time = db.Column(db.DateTime())
     last_modified_time = db.Column(db.DateTime())
+    status = db.Column(db.Integer)
 
 class ResourceIndex(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
