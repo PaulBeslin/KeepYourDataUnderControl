@@ -40,3 +40,42 @@
     text-align: center;
     padding: 0px;
 }
+
+
+
+
+
+
+#menuContainer{
+    border: 1px solid black;
+    z-index: 10;
+}
+
+ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menuOption{
+    border: none;
+    margin: 0;
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    cursor: pointer;
+    background-color:white;
+    text-align: left;
+}
+
+.menuOption:hover{
+    background-color: beige;
+}
+
+li{
+    font-size: larger;
+}
+
+.redText{
+    color: red;
+}

@@ -1,5 +1,6 @@
 import $ from "jquery";
 import './manage.css';
+import { showContextMenu } from "./menu.js";
 
 const exampleImgSrc = "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png";
 const DB_URL = "http://localhost:5001/";
@@ -8,10 +9,12 @@ const GET_ALL_URL = DB_URL + "all";
 
 /**
  * Structure of a userdata retrieved from the database.
+ * - accessSiteList: All websites where access to the userdata is authorized.
  * - data: URL to the userdata in database, ex.: "http://localhost:5001/query/resource/31d81771-d9fc-4922-87bf-5488fbf2f495"
  * - id: UUID of the data, ex.: "31d81771-d9fc-4922-87bf-5488fbf2f495"
  * - type: type of userdata, either 'image' or 'text'.
  * @typedef {Object} DataStruct
+ *  @property {string[]} accessSiteList - All websites where access to the userdata is authorized.
  *  @property {string} data - URL to the userdata in database, 
  *                            ex.: "http://localhost:5001/query/resource/31d81771-d9fc-4922-87bf-5488fbf2f495"
  *  @property {string} id - UUID of the userdata, 
@@ -96,8 +99,11 @@ function createMenuButton(dataId, container){
     let button = document.createElement('button');
     button.type = "button";
     button.className = "limit-size";
-    button.textContent = 'X';
-    button.onclick = () => removeData(dataId, container)
+    button.textContent = '...';
+    //button.onclick = () => removeData(dataId, container)
+    button.onclick = (event) => showContextMenu(event.clientX, event.clientY,
+        function(){removeData(dataId, container); }
+    );
 
     menuDiv.appendChild(button);
 
@@ -124,8 +130,6 @@ function createDataContainer(data){
 
     return container;
 }
-
-
 
 const gridElement = document.getElementById("dataGrid");
 
