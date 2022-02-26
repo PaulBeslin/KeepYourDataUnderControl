@@ -2,7 +2,6 @@ import $ from "jquery";
 import './manage.css';
 import { showContextMenu } from "./menu.js";
 
-const exampleImgSrc = "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png";
 const DB_URL = "http://localhost:5001/";
 const DELETE_URL = DB_URL + "remove/";
 const GET_ALL_URL = DB_URL + "all";

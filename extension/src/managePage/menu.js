@@ -1,28 +1,12 @@
 import $ from "jquery";
 
-const menuElement = document.getElementById("menuContainer");
-const deleteButton = document.getElementById("deleteButton");
-const editButton = document.getElementById("editButton");
+/**
+ * @typedef {import('./manage.js').DataStruct} DataStruct
+ */
 
-const manageAccessContainer = document.getElementById("manageAccessContainer");
-const siteList = document.getElementById("siteList");
+const menuElement = document.getElementById("menuContainer");
 
 const POST_ACL_URL = "http://localhost:5001/updateAcl"
-
-/**
- * Structure of a userdata retrieved from the database.
- * - accessSiteList: All websites where access to the userdata is authorized.
- * - data: URL to the userdata in database, ex.: "http://localhost:5001/query/resource/31d81771-d9fc-4922-87bf-5488fbf2f495"
- * - id: UUID of the data, ex.: "31d81771-d9fc-4922-87bf-5488fbf2f495"
- * - type: type of userdata, either 'image' or 'text'.
- * @typedef {Object} DataStruct
- *  @property {string[]} accessSiteList - All websites where access to the userdata is authorized.
- *  @property {string} data - URL to the userdata in database, 
- *                            ex.: "http://localhost:5001/query/resource/31d81771-d9fc-4922-87bf-5488fbf2f495"
- *  @property {string} id - UUID of the userdata, 
- *                          ex.: "31d81771-d9fc-4922-87bf-5488fbf2f495"
- *  @property {string} type - type of userdata, either 'image' or 'text'.
- */
 
 function execAndClose(execFunction){
     return function(){
@@ -32,18 +16,29 @@ function execAndClose(execFunction){
 }
 
 /**
+ * Appends a new row to the <ul> element containing all access granted to the userdata.
+ * @param {string} site Domain from where the userdata can be accessed - ex: www.google.com
+ */
+function appendACLItem(site){
+    const siteList = document.getElementById("siteList");
+
+    let listElem = document.createElement("li");
+    listElem.innerText = site;
+    siteList.appendChild(listElem);
+}
+
+/**
  * 
  * @param {DataStruct} data 
  */
 function openAccessList(data){
     const siteFormElem = document.getElementById("siteForm");
 
-    manageAccessContainer.hidden = false;
+    document.getElementById("manageAccessContainer").hidden = false;
     
+    document.getElementById("siteList").innerHTML = "";
     data.accessSiteList.forEach(function(site){
-        let listElem = document.createElement("li");
-        listElem.innerText = site;
-        siteList.appendChild(listElem);
+        appendACLItem(site);
     })
 
     siteFormElem.addEventListener("submit", (e) => {onAccessGranted(e, data); return false;});
@@ -75,9 +70,7 @@ function onAccessGranted(e, data){
       })
         .then(_ => {
             console.log(`Successfully updated ACL for data with ID: ${data.id}`);
-            let listElem = document.createElement("li");
-            listElem.innerText = newSite;
-            siteList.appendChild(listElem);
+            appendACLItem(newSite);
         });
 }
 
@@ -86,8 +79,8 @@ function showContextMenu(x, y, onDelete, data){
     menuElement.style.left = `${x}px`;
     menuElement.style.top = `${y}px`;
 
-    deleteButton.onclick = execAndClose(onDelete);
-    editButton.onclick = execAndClose(() => openAccessList(data));
+    document.getElementById("deleteButton").onclick = execAndClose(onDelete);
+    document.getElementById("editButton").onclick = execAndClose(() => openAccessList(data));
 
     menuElement.hidden = false;
 }
