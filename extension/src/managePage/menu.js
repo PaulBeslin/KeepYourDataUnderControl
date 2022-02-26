@@ -19,11 +19,22 @@ function execAndClose(execFunction){
  * Appends a new row to the <ul> element containing all access granted to the userdata.
  * @param {string} site Domain from where the userdata can be accessed - ex: www.google.com
  */
-function appendACLItem(site){
+function appendACLItem(site, data){
     const siteList = document.getElementById("siteList");
 
-    let listElem = document.createElement("li");
-    listElem.innerText = site;
+    const listElem = document.createElement("li");
+
+    //Remove button
+    const removeElem = document.createElement("button");
+    removeElem.textContent = "×";
+    removeElem.onclick = () => onAccessRemoved(data, site, listElem);
+    listElem.appendChild(removeElem);
+    
+    //Domain name
+    const nameElem = document.createElement("span");
+    nameElem.innerText = site;
+    listElem.appendChild(nameElem);
+
     siteList.appendChild(listElem);
 }
 
@@ -37,7 +48,7 @@ function openAccessList(data){
     //Display all sites authorized yet.
     document.getElementById("siteList").innerHTML = "";
     data.accessSiteList.forEach(function(site){
-        appendACLItem(site);
+        appendACLItem(site, data);
     })
 
     //Trigered when a domain is added via the input.
@@ -55,8 +66,6 @@ function openAccessList(data){
         }
     }
 }
-
-
 
 /**
  * 
@@ -84,7 +93,32 @@ function onAccessGranted(e, data){
       })
         .then(_ => {
             console.log(`Successfully updated ACL for data with ID: ${data.id}`);
-            appendACLItem(newSite);
+            appendACLItem(newSite, data);
+        });
+}
+
+/**
+ * 
+ * @param {DataStruct} data 
+ * @param {*} site 
+ */
+function onAccessRemoved(data, site, container){
+    const newACL = data.accessSiteList.filter((value, _) => value !== site);
+
+    const body = JSON.stringify({
+        "id": data.id,
+        "access_site": newACL
+    });
+    
+    $.ajax({
+        type: "POST",
+        url: POST_ACL_URL,
+        data: body,
+        dataType: "json"
+      })
+        .then(_ => {
+            console.log(`Successfully updated ACL for data with ID: ${data.id}`);
+            container.remove();
         });
 }
 
