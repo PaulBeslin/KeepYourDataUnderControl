@@ -33,16 +33,30 @@ function appendACLItem(site){
  */
 function openAccessList(data){
     const siteFormElem = document.getElementById("siteForm");
-
-    document.getElementById("manageAccessContainer").hidden = false;
     
+    //Display all sites authorized yet.
     document.getElementById("siteList").innerHTML = "";
     data.accessSiteList.forEach(function(site){
         appendACLItem(site);
     })
 
+    //Trigered when a domain is added via the input.
     siteFormElem.addEventListener("submit", (e) => {onAccessGranted(e, data); return false;});
+
+    //Setting up the ACL window as a dialog.
+    const modal = document.getElementById("myModal");
+    modal.style.display = "block";
+    document.getElementById("close-modal").onclick = function(){
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+    }
 }
+
+
 
 /**
  * 
