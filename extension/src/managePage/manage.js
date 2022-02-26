@@ -84,13 +84,12 @@ function createDataFrame(data){
 /**
  * Menu part of the data container (see createDataContainer)
  * 
- * @param {number} dataId The ID in database for the data to display.
- *                        Used when interacting with the data.
+ * @param {DataStruct} data Information about the selected data.
  * @param {HTMLDivElement} container The data container, which should be removed 
 *                       by clicking the Delete button.
  * @returns {HTMLDivElement} A div containing the menu options
  */
-function createMenuButton(dataId, container){
+function createMenuButton(data, container){
     //Menu div
     let menuDiv = document.createElement('div');
     menuDiv.className = "data-menu";
@@ -102,7 +101,8 @@ function createMenuButton(dataId, container){
     button.textContent = '...';
     //button.onclick = () => removeData(dataId, container)
     button.onclick = (event) => showContextMenu(event.clientX, event.clientY,
-        function(){removeData(dataId, container); }
+        function(){removeData(data.id, container); },
+        data
     );
 
     menuDiv.appendChild(button);
@@ -126,7 +126,7 @@ function createDataContainer(data){
     container.appendChild(createDataFrame(data));
 
     //Button frame
-    container.appendChild(createMenuButton(data.id, container));
+    container.appendChild(createMenuButton(data, container));
 
     return container;
 }

@@ -19,8 +19,18 @@
                 <button id="deleteButton" class="menuOption"><strong class="redText">Delete</strong></button>
             </li>
             <li>
-                <button class="menuOption"><strong>Edit authorized sites</strong></button>
+                <button id="editButton" class="menuOption"><strong>Edit authorized sites</strong></button>
             </li>
+        </ul>
+    </div>
+
+    <div id="manageAccessContainer" hidden="true">
+        <form id="siteForm">
+            <input type="text" id="siteInput" required>
+            <input type="submit" value="Add">
+        </form>
+        <ul id="siteList">
+
         </ul>
     </div>
 
