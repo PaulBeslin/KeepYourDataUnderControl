@@ -97,6 +97,42 @@
 				"url": "http://localhost:5001/updateAcl"
 			},
 			"response": []
+		},
+		{
+			"name": "AddAcl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"ec609f52-3f9d-46a6-baf9-576368cc3d14\",\n    \"access_site\": \"www.google.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:5001/addAcl"
+			},
+			"response": []
+		},
+		{
+			"name": "RemoveAcl",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"ec609f52-3f9d-46a6-baf9-576368cc3d14\",\n    \"access_site\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:5001/removeAcl"
+			},
+			"response": []
 		}
 	]
 }
