@@ -86,9 +86,12 @@ function openAccessList(dataId){
  * @param {string} dataId ID of the edited userdata.
  */
 function onAccessGranted(dataId){
-    //Retrieve the site typed in the input bar.
+    //Retrieve the site typed in the input bar and reset it.
     const siteInputElem = document.getElementById("siteInput");
+    const siteFormElem = document.getElementById("siteForm");
+
     const newSite = siteInputElem.value;
+    siteFormElem.reset();
 
     addAccessInDB(dataId, newSite).then(_ => {
         console.log(`Successfully updated ACL for data with ID: ${dataId}`);
