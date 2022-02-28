@@ -6,7 +6,8 @@ import $ from "jquery";
 
 const menuElement = document.getElementById("menuContainer");
 
-const POST_ACL_URL = "http://localhost:5001/updateAcl"
+const ADD_ACL_URL = "http://localhost:5001/addAcl"
+const REMOVE_ACL_URL = "http://localhost:5001/removeAcl"
 
 function execAndClose(execFunction){
     return function(){
@@ -79,15 +80,12 @@ function onAccessGranted(e, data){
 
     const body = JSON.stringify({
         "id": data.id,
-        "access_site": [
-            ...data.accessSiteList,
-            newSite
-        ]
+        "access_site": newSite
     });
     
     $.ajax({
         type: "POST",
-        url: POST_ACL_URL,
+        url: ADD_ACL_URL,
         data: body,
         dataType: "json"
       })
@@ -103,16 +101,14 @@ function onAccessGranted(e, data){
  * @param {*} site 
  */
 function onAccessRemoved(data, site, container){
-    const newACL = data.accessSiteList.filter((value, _) => value !== site);
-
     const body = JSON.stringify({
         "id": data.id,
-        "access_site": newACL
+        "access_site": site
     });
     
     $.ajax({
-        type: "POST",
-        url: POST_ACL_URL,
+        type: "DELETE",
+        url: REMOVE_ACL_URL,
         data: body,
         dataType: "json"
       })
