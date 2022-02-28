@@ -56,7 +56,7 @@ def uploadResource():
             if id != -1:
                 url = BASE_HOST + RESOURCE_SUFFIX + str(id)
                 res = json.dumps({'url': url})
-    if extension == '.jpg':
+    if extension == '.jpg' or extension == '.png':
         with open(file_path, 'rb') as file:
             img = file.read()
             id = ResourceService().addResource(img, ownerId, 1, site)
