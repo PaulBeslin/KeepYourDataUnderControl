@@ -110,3 +110,19 @@ def updateAccessList():
     accessSite = data.get("access_site")
     ResourceAccessSiteService().updateAccessSiteByIndexId(indexId=id, site=accessSite)
     return jsonify({"status": "ok"})
+
+@api.route("/addAcl", methods=["POST"])
+def addSiteAcl():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    accessSite = data.get("access_site")
+    siteList = ResourceAccessSiteService().addAccessSiteByIndexId(indexId=id, site=accessSite)
+    return jsonify({"list": siteList})
+
+@api.route("/removeAcl", methods=["DELETE"])
+def removeSiteAcl():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    accessSite = data.get("access_site")
+    siteList = ResourceAccessSiteService().removeAccessSiteByIndexId(indexId=id, site=accessSite)
+    return jsonify({"list": siteList})

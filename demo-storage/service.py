@@ -123,8 +123,10 @@ class ResourceAccessSiteService:
     def getAccessSiteListByIndexId(self, id):
         accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
         accessList = []
-        if (accessSite != None):
+        if (accessSite != None and accessSite != ""):
             accessList = accessSite.access_site.split(";")
+        if ("" in accessList):
+            accessList.remove("")
         return accessList
     
     def updateAccessSiteByIndexId(self, indexId, site):
@@ -136,3 +138,17 @@ class ResourceAccessSiteService:
 
     def removeAccessSiteByIndexId(self, indexId):
         ResourceAccessSiteDao().removeResourceAccessSite(indexId==indexId)
+
+    def addAccessSiteByIndexId(self, indexId, site):
+        siteList = self.getAccessSiteListByIndexId(indexId)
+        if site not in siteList:
+            siteList.append(site)
+            self.updateAccessSiteByIndexId(indexId=indexId, site=siteList)
+        return siteList
+        
+    def removeAccessSiteByIndexId(self, indexId, site):
+        siteList = self.getAccessSiteListByIndexId(indexId)
+        if site in siteList:
+            siteList.remove(site)
+            self.updateAccessSiteByIndexId(indexId=indexId, site=siteList)
+        return siteList
