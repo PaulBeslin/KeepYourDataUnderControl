@@ -1,24 +1,10 @@
 import $ from "jquery";
 import './manage.css';
 import { showContextMenu } from "./menu.js";
-
-const DB_URL = "http://localhost:5001/";
-const DELETE_URL = DB_URL + "remove/";
-const GET_ALL_URL = DB_URL + "all";
+import { removeDataFromDB, getAllDataFromDB } from "./requests.js";
 
 /**
- * Structure of a userdata retrieved from the database.
- * - accessSiteList: All websites where access to the userdata is authorized.
- * - data: URL to the userdata in database, ex.: "http://localhost:5001/query/resource/31d81771-d9fc-4922-87bf-5488fbf2f495"
- * - id: UUID of the data, ex.: "31d81771-d9fc-4922-87bf-5488fbf2f495"
- * - type: type of userdata, either 'image' or 'text'.
- * @typedef {Object} DataStruct
- *  @property {string[]} accessSiteList - All websites where access to the userdata is authorized.
- *  @property {string} data - URL to the userdata in database, 
- *                            ex.: "http://localhost:5001/query/resource/31d81771-d9fc-4922-87bf-5488fbf2f495"
- *  @property {string} id - UUID of the userdata, 
- *                          ex.: "31d81771-d9fc-4922-87bf-5488fbf2f495"
- *  @property {string} type - type of userdata, either 'image' or 'text'.
+ * @typedef {import('./requests.js').DataStruct} DataStruct
  */
 
 /**
@@ -33,14 +19,7 @@ function removeData(dataId, htmlFrame){
     htmlFrame.remove();
 
     //Remove the data from the database.
-    let body = JSON.stringify({"id": dataId});
-    $.ajax({
-        type: "DELETE",
-        url: DELETE_URL,
-        data: body,
-        dataType: "json"
-      })
-        .then(_ => {console.log(`Successfully deleted data with ID: ${dataId}`)});
+    removeDataFromDB(dataId).then(_ => {console.log(`Successfully deleted data with ID: ${dataId}`)});
 }
 
 /**
@@ -98,10 +77,9 @@ function createMenuButton(data, container){
     button.type = "button";
     button.className = "limit-size";
     button.textContent = '...';
-    //button.onclick = () => removeData(dataId, container)
     button.onclick = (event) => showContextMenu(event.clientX, event.clientY,
         function(){removeData(data.id, container); },
-        data
+        data.id
     );
 
     menuDiv.appendChild(button);
@@ -132,14 +110,11 @@ function createDataContainer(data){
 
 const gridElement = document.getElementById("dataGrid");
 
-$.ajax({
-    type: "GET",
-    url: GET_ALL_URL,
-    dataType: "json"
-})
-    .then(dataList => {
+getAllDataFromDB().then(
+    dataList => {
         dataList.forEach(data => {
             gridElement.appendChild(createDataContainer(data));
         })
-    });
+    }
+);
 

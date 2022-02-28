@@ -1,14 +1,17 @@
-import $ from "jquery";
+import { addAccessInDB, removeAccessInDB, getDataACLFromDB } from "./requests.js";
 
 /**
- * @typedef {import('./manage.js').DataStruct} DataStruct
+ * @typedef {import('./requests.js').DataStruct} DataStruct
  */
 
 const menuElement = document.getElementById("menuContainer");
 
-const ADD_ACL_URL = "http://localhost:5001/addAcl"
-const REMOVE_ACL_URL = "http://localhost:5001/removeAcl"
-
+/**
+ * Provides a quick way to append menu hiding to a handler.
+ * 
+ * @param {() => void} execFunction 
+ * @returns {() => void} A new handler, which includes the given handler first.
+ */
 function execAndClose(execFunction){
     return function(){
         execFunction();
@@ -18,17 +21,17 @@ function execAndClose(execFunction){
 
 /**
  * Appends a new row to the <ul> element containing all access granted to the userdata.
+ * 
  * @param {string} site Domain from where the userdata can be accessed - ex: www.google.com
  */
-function appendACLItem(site, data){
+function appendACLItem(site, dataId){
     const siteList = document.getElementById("siteList");
-
     const listElem = document.createElement("li");
 
     //Remove button
     const removeElem = document.createElement("button");
     removeElem.textContent = "×";
-    removeElem.onclick = () => onAccessRemoved(data, site, listElem);
+    removeElem.onclick = () => onAccessRemoved(dataId, site, listElem);
     listElem.appendChild(removeElem);
     
     //Domain name
@@ -40,20 +43,28 @@ function appendACLItem(site, data){
 }
 
 /**
+ * Opens a window displaying all sites that have access to the selected userdata.
+ * It allows the user to add or remove sites.
  * 
- * @param {DataStruct} data 
+ * @param {string} dataId ID of the edited userdata.
  */
-function openAccessList(data){
+function openAccessList(dataId){
     const siteFormElem = document.getElementById("siteForm");
     
     //Display all sites authorized yet.
     document.getElementById("siteList").innerHTML = "";
-    data.accessSiteList.forEach(function(site){
-        appendACLItem(site, data);
-    })
+    getDataACLFromDB(dataId).then(accessSiteList => {
+        accessSiteList.forEach(function(site){
+            appendACLItem(site, dataId);
+        })
+    });
 
     //Trigered when a domain is added via the input.
-    siteFormElem.addEventListener("submit", (e) => {onAccessGranted(e, data); return false;});
+    siteFormElem.addEventListener("submit", (e) => {
+        e.preventDefault();
+        onAccessGranted(dataId); 
+        return false;
+    });
 
     //Setting up the ACL window as a dialog.
     const modal = document.getElementById("myModal");
@@ -69,62 +80,46 @@ function openAccessList(data){
 }
 
 /**
+ * Called when the user wants to grant access to a site for one of the userdata.
+ * It edits the ACL in the database and updates the display.
  * 
- * @param {DataStruct} data 
+ * @param {string} dataId ID of the edited userdata.
  */
-function onAccessGranted(e, data){
-    e.preventDefault();
-
+function onAccessGranted(dataId){
+    //Retrieve the site typed in the input bar.
     const siteInputElem = document.getElementById("siteInput");
     const newSite = siteInputElem.value;
 
-    const body = JSON.stringify({
-        "id": data.id,
-        "access_site": newSite
+    addAccessInDB(dataId, newSite).then(_ => {
+        console.log(`Successfully updated ACL for data with ID: ${dataId}`);
+        appendACLItem(newSite, dataId);
     });
-    
-    $.ajax({
-        type: "POST",
-        url: ADD_ACL_URL,
-        data: body,
-        dataType: "json"
-      })
-        .then(_ => {
-            console.log(`Successfully updated ACL for data with ID: ${data.id}`);
-            appendACLItem(newSite, data);
-        });
 }
 
 /**
+ * Called when the user wants to remove access to a site for one of the userdata.
+ * It edits the ACL in the database and updates the display.
  * 
- * @param {DataStruct} data 
- * @param {*} site 
+ * @param {string} dataId ID of the edited userdata.
+ * @param {string} site Site to remove from the ACL.
+ * @param {HTMLElement} container Corresponding DOM element which should be removed.
  */
-function onAccessRemoved(data, site, container){
-    const body = JSON.stringify({
-        "id": data.id,
-        "access_site": site
+function onAccessRemoved(dataId, site, container){
+    removeAccessInDB(dataId, site).then(_ => {
+        console.log(`Successfully updated ACL for data with ID: ${dataId}`);
+        container.remove();
     });
-    
-    $.ajax({
-        type: "DELETE",
-        url: REMOVE_ACL_URL,
-        data: body,
-        dataType: "json"
-      })
-        .then(_ => {
-            console.log(`Successfully updated ACL for data with ID: ${data.id}`);
-            container.remove();
-        });
 }
 
-function showContextMenu(x, y, onDelete, data){
+function showContextMenu(x, y, onDelete, dataId){
+    //Opens the menu at the click position.
     menuElement.style.position = "absolute";
     menuElement.style.left = `${x}px`;
     menuElement.style.top = `${y}px`;
 
+    //Feel free to add options here (corresponding DOM elements must be created first in manage.html).
     document.getElementById("deleteButton").onclick = execAndClose(onDelete);
-    document.getElementById("editButton").onclick = execAndClose(() => openAccessList(data));
+    document.getElementById("editButton").onclick = execAndClose(() => openAccessList(dataId));
 
     menuElement.hidden = false;
 }
