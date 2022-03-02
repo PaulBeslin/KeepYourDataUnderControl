@@ -1,8 +1,8 @@
+#from crypt import methods
 import os
 
 from flask import (
     abort,
-    Flask,
     Blueprint,
     json,
     jsonify,
@@ -11,14 +11,11 @@ from flask import (
 )
 from service import (
     ResourceService,
-    TextResourceService,
-    ImageResourceService
+    ResourceAccessSiteService
 )
 import json
-from config import BASE_HOST, UPLOAD_FOLDER
+from config import BASE_HOST, UPLOAD_FOLDER, DEFAULT_ACCSS_URL, RESOURCE_SUFFIX
 from werkzeug.utils import secure_filename
-import base64
-
 
 api = Blueprint('api', __name__, url_prefix="")
 
@@ -27,6 +24,11 @@ api = Blueprint('api', __name__, url_prefix="")
 def homePage():
     return "Lucky You! This is da home page"
 
+@api.route('/all/', methods=['GET'])
+def getAll():
+    resourceList = ResourceService().getAll()
+    return jsonify(resourceList)
+
 @api.route('/', methods=['POST'])
 def uploadResource():
     if 'file' not in request.files:
@@ -34,6 +36,9 @@ def uploadResource():
     
     file = request.files['file']
     ownerId = request.form.get("owner_id")
+    site = request.form.get("site")
+    if (site == None or site == ""):
+        site = DEFAULT_ACCSS_URL
 
     if file.filename == '':
         abort(Response("Empty filename", 400))
@@ -47,33 +52,77 @@ def uploadResource():
     if extension == '.txt':
         with open(file_path) as file:
             text = file.read()
-            id = TextResourceService().addTextResource(text, ownerId)
+            id = ResourceService().addResource(text, ownerId, 2, site)
             if id != -1:
-                url = BASE_HOST + "/resource/" + str(id)
+                url = BASE_HOST + RESOURCE_SUFFIX + str(id)
                 res = json.dumps({'url': url})
     if extension == '.jpg':
         with open(file_path, 'rb') as file:
             img = file.read()
-            id = ImageResourceService().addImageResource(img, ownerId)
+            id = ResourceService().addResource(img, ownerId, 1, site)
             if id != -1:
-                url = BASE_HOST + "/resource/" + str(id)
+                url = BASE_HOST + RESOURCE_SUFFIX + str(id)
                 res= json.dumps({'url': url})
     os.remove(file_path)
     return res
 
-@api.route('/resource/<id>')
-def getResource(id):
+@api.route(RESOURCE_SUFFIX + '<id>', methods=["GET"])
+def getResourcGet(id):
     resourceService = ResourceService()
     resourceIndex = resourceService.getResourceIndex(id)
-    resource = resourceService.getResource(id)
+    resource = resourceService.doGetResource(id)
     if (resourceIndex.data_type == 1):
         resp = Response(resource, mimetype="image/jpeg")
         return resp
     if (resourceIndex.data_type == 2):
         return jsonify(resource)
+
+@api.route(RESOURCE_SUFFIX + '<id>', methods=["POST"])
+def getResourcePost(id):
+    site = request.form.get("site")
+    resourceService = ResourceService()
+    resourceIndex = resourceService.getResourceIndex(id)
+    resource = resourceService.getResource(id, site=site)
+    if (resourceIndex.data_type == 1):
+        resp = Response(resource, mimetype="image/jpeg")
+        return resp
+    if (resourceIndex.data_type == 2):
+        return jsonify(resource)
+
+@api.route('/remove/', methods=["DELETE"])
+def removeResource():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    resourceService = ResourceService()
+    resourceService.removeResource(id)
+    return jsonify({"status":"ok"})
     
 @api.route('/owner/<id>')
 def getResourceByOwnerId(id):
     # return an array of resource 
     resourceList = ResourceService().getResourceByOwnerId(id)
     return jsonify(resourceList)
+
+@api.route("/updateAcl", methods=["POST"])
+def updateAccessList():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    accessSite = data.get("access_site")
+    ResourceAccessSiteService().updateAccessSiteByIndexId(indexId=id, site=accessSite)
+    return jsonify({"status": "ok"})
+
+@api.route("/addAcl", methods=["POST"])
+def addSiteAcl():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    accessSite = data.get("access_site")
+    siteList = ResourceAccessSiteService().addAccessSiteByIndexId(indexId=id, site=accessSite)
+    return jsonify({"list": siteList})
+
+@api.route("/removeAcl", methods=["DELETE"])
+def removeSiteAcl():
+    data = json.loads(request.get_data())
+    id = data.get("id")
+    accessSite = data.get("access_site")
+    siteList = ResourceAccessSiteService().removeAccessSiteByIndexId(indexId=id, site=accessSite)
+    return jsonify({"list": siteList})

@@ -35,8 +35,21 @@ chrome.contextMenus.onClicked.addListener(sendEncodingRequest);
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     console.log("PAGE UPDATED");
     var title = changeInfo.title;
-
-    if (title !== undefined) {
+	
+	if (title !== undefined) {
         console.log("REALLY UPDATED");
     }
-})
+});
+
+//fetch(`https://www.linkedin.com/feed/`)
+
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        if (request.type) {
+            console.log('hello received', request.type);
+        }
+    });
+
+chrome.browserAction.onClicked.addListener(function () {
+    chrome.tabs.create({ url: chrome.runtime.getURL("manage.html") });
+});

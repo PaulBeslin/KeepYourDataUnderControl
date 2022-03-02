@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Chrome Extension</title>
+    <link rel="stylesheet" href="manage.css" />
+</head>
+
+<body>
+    <div id="dataGrid">
+
+    </div>
+
+
+    <div id="menuContainer" hidden="true">
+        <ul>
+            <li>
+                <button id="deleteButton" class="menuOption"><strong class="redText">Delete</strong></button>
+            </li>
+            <li>
+                <button id="editButton" class="menuOption"><strong>Edit authorized sites</strong></button>
+            </li>
+        </ul>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div id="manageAccessContainer" class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <form id="siteForm">
+                <input type="url" id="siteInput" placeholder="https://www.linkedin.com" required>
+                <input type="submit" value="Add">
+            </form>
+            <ul id="siteList">
+
+            </ul>
+        </div>
+    </div>
+
+	<script src="manage.js"></script>
+</body>
+
+</html>
