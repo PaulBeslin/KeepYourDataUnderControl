@@ -7,9 +7,16 @@
 	"item": [
 		{
 			"name": "GetAll",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
 				"url": "http://localhost:5001/all",
 				"description": "Function : Get all resources.\n``` json\n[\n    {\n        \"data\": \"http://localhost:5001/query/resource/3\", // url to the resource\n        \"id\": 3, // id of the resource\n        \"type\": \"image\" // type of the resource\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/5\",\n        \"id\": 5,\n        \"type\": \"image\"\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/6\",\n        \"id\": 6,\n        \"type\": \"image\"\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/8\",\n        \"id\": 8,\n        \"type\": \"text\"\n    }\n]\n\n```"
 			},
@@ -36,6 +43,40 @@
 			"response": []
 		},
 		{
+			"name": "GetDenyImage",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": "http://localhost:5001/acl/deny/image",
+				"description": "Function : Get all resources.\n``` json\n[\n    {\n        \"data\": \"http://localhost:5001/query/resource/3\", // url to the resource\n        \"id\": 3, // id of the resource\n        \"type\": \"image\" // type of the resource\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/5\",\n        \"id\": 5,\n        \"type\": \"image\"\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/6\",\n        \"id\": 6,\n        \"type\": \"image\"\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/8\",\n        \"id\": 8,\n        \"type\": \"text\"\n    }\n]\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "GetDenyText",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": "http://localhost:5001/acl/deny/text",
+				"description": "Function : Get all resources.\n``` json\n[\n    {\n        \"data\": \"http://localhost:5001/query/resource/3\", // url to the resource\n        \"id\": 3, // id of the resource\n        \"type\": \"image\" // type of the resource\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/5\",\n        \"id\": 5,\n        \"type\": \"image\"\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/6\",\n        \"id\": 6,\n        \"type\": \"image\"\n    },\n    {\n        \"data\": \"http://localhost:5001/query/resource/8\",\n        \"id\": 8,\n        \"type\": \"text\"\n    }\n]\n\n```"
+			},
+			"response": []
+		},
+		{
 			"name": "PostResource",
 			"request": {
 				"method": "POST",
@@ -46,37 +87,22 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/Users/xisung/Desktop/tmp.txt"
+							"src": "/Users/xisung/Desktop/IMG_5175.png"
 						},
 						{
 							"key": "owner_id",
 							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "site",
+							"value": "www.google.com",
 							"type": "text"
 						}
 					]
 				},
 				"url": "http://localhost:5001/",
 				"description": "In the form, `file` needs to be sent with an image(.jpg format) or a text(.txt format).\n\nReturn value:\n\n``` json\n{\n    \"url\": \"http://localhost:5001/query/resource/8\" // url to the resource\n}\n\n```"
-			},
-			"response": []
-		},
-		{
-			"name": "DeleteById",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "id",
-							"value": "ef6a32e4-0c6e-4b0a-a438-8256f93beb0b",
-							"type": "text"
-						}
-					]
-				},
-				"url": "http://localhost:5001/remove",
-				"description": "Delete a resource by Id\n\nReturn value:\n\n``` json\n{\n    \"status\": \"ok\"\n}\n\n```"
 			},
 			"response": []
 		},
@@ -113,6 +139,45 @@
 					}
 				},
 				"url": "http://localhost:5001/addAcl"
+			},
+			"response": []
+		},
+		{
+			"name": "GetResourceOnVerifyingACL",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site\" : \"www.linkedin.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:5001/acl/408cc4dc-2de4-4c1b-aa7d-92ffaf68ad61",
+				"description": "In the form, `file` needs to be sent with an image(.jpg format) or a text(.txt format).\n\nReturn value:\n\n``` json\n{\n    \"url\": \"http://localhost:5001/query/resource/8\" // url to the resource\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteById",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "ef6a32e4-0c6e-4b0a-a438-8256f93beb0b",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:5001/remove",
+				"description": "Delete a resource by Id\n\nReturn value:\n\n``` json\n{\n    \"status\": \"ok\"\n}\n\n```"
 			},
 			"response": []
 		},
