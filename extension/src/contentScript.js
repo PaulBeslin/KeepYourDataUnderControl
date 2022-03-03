@@ -9,6 +9,8 @@ const {
 import QrCode from './QrCode';
 require("./contentScript_2");
 
+const BASE_URL = "http://localhost:5001/";
+
 
 $(window).on("load", async function () {
 
@@ -26,7 +28,7 @@ $(window).on("load", async function () {
       //Launching Encoding Reuest
       $.ajax({
           // This url need to be changed to your own self storage
-          "url": "http://localhost:5001/",
+          "url": BASE_URL,
           "method": "POST",
           "timeout": 0,
           "processData": false,
@@ -157,12 +159,13 @@ $(window).on("load", async function () {
     try {
       await qrCode.decode();
       if (qrCode.link) {
-        node.setAttribute("src", qrCode.link);
+        let accessURL = await tryGetResourceURL(qrCode.link);
+        node.setAttribute("src", accessURL);
         node.setAttribute("analyzed", '');
         node.addEventListener("click", () => {
           setTimeout(function () {
             let currentImg = document.getElementsByClassName("artdeco-modal__content")[0].querySelector("img:not([analyzed])");
-            currentImg.setAttribute("src", qrCode.link);
+            currentImg.setAttribute("src", accessURL);
             currentImg.setAttribute("analyzed", '');
           }, 500);
         });
@@ -192,7 +195,7 @@ $(window).on("load", async function () {
           });*/
 
   //sync HTTP request used to get the text from storage.
-  function uri_to_text(uri) {
+  /*function uri_to_text(uri) {
     if (uri === undefined || uri.trim().length == 0) {
       console.error(`URL ${uri} is invalid.`);
       return uri;
@@ -201,7 +204,7 @@ $(window).on("load", async function () {
     var content;
     $.ajax({
       type: 'GET',
-      url: uri,
+      url: accessURL,
       dataType: 'text',
       async: false,
       success: function (data) {
@@ -209,14 +212,30 @@ $(window).on("load", async function () {
       }
     });
     return content;
-  }
+  }*/
 
   //async HTTP request used to get the text from storage.
   async function uri_to_text_async(uri) {
-    let response = await fetch(uri);
+    let accessURL = await tryGetResourceURL(uri);
+    let response = await fetch(accessURL);
     let data = await response.text();
     return data;
   }
+
+  async function tryGetResourceURL(url){
+    const body = JSON.stringify({"site": location.host});
+
+    const result = await $.ajax({
+      type: "POST",
+      url: url,
+      data: body,
+      dataType: "json"
+    });
+
+    return result.url;
+  }
+
+
 });
 
 

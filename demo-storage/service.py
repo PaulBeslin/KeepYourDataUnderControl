@@ -79,12 +79,12 @@ class ResourceService:
  
         if (resourceIndex.data_type == 1):
             if (permitted == True and exist == True):
-                return BASE_HOST + RESOURCE_SUFFIX + "/" + resourceIndex.uuid
+                return BASE_HOST + RESOURCE_SUFFIX + resourceIndex.uuid
             else:
                 return BASE_HOST + "/acl/deny/image"
         if (resourceIndex.data_type == 2):
             if (permitted == True and exist == True):
-                return BASE_HOST + RESOURCE_SUFFIX + "/" + resourceIndex.uuid
+                return BASE_HOST + RESOURCE_SUFFIX + resourceIndex.uuid
             else:
                 return BASE_HOST + "/acl/deny/text"
 
