@@ -50,6 +50,8 @@ def uploadResource():
     ownerId = request.form.get("owner_id")
     site = request.form.get("site")
     if (site == None or site == ""):
+        # Default access url could be modified in config file
+        # This is used for test
         site = DEFAULT_ACCSS_URL
 
     if file.filename == '':
@@ -61,6 +63,7 @@ def uploadResource():
     file.save(file_path)
     extension = os.path.splitext(filename)[-1]
     res = ""
+    # Following if statement is to judge the type of resources
     if extension == '.txt':
         with open(file_path) as file:
             text = file.read()
@@ -69,12 +72,14 @@ def uploadResource():
                 url = BASE_HOST + ACL_SUFFIX + str(id)
                 res = json.dumps({'url': url})
     if extension == '.jpg' or extension == '.png':
+        # If it is an image, it should be opened with 'rb' mode
         with open(file_path, 'rb') as file:
             img = file.read()
             id = ResourceService().addResource(img, ownerId, 1, site)
             if id != -1:
                 url = BASE_HOST + ACL_SUFFIX + str(id)
                 res= json.dumps({'url': url})
+    # remove temporary file
     os.remove(file_path)
     return res
 
@@ -93,6 +98,10 @@ def getResourceGet(id):
 def getResourcGetAcl(id):
     return getResourceGet(id)
 
+# This function is to verify access list
+# If the site passes the verification, a correct url to the resource will be returned
+# Otherwise, the function will return an url towards the denied information (a text or an image)
+# When frontend get this url, another request towards it will be sent to get the resource
 @api.route(ACL_SUFFIX + '<id>', methods=["POST"])
 def getResourcePostAcl(id):
     jsondata = request.get_data()

@@ -6,6 +6,7 @@ from dao import (
     ResourceAccessSiteDao
 )
 
+# Service for manage resource, controller doesn't need other service to manage service.
 class ResourceService:
     def getAll(self):
         resourceIndexList = ResourceIndexDao().getAll()
@@ -101,7 +102,7 @@ class ResourceService:
 
     def removeResource(self, id):
         ResourceIndexDao().removeResourceByUUID(id)
-        ResourceAccessSiteService().removeAccessSiteByIndexId(id)
+        ResourceAccessSiteService().removeAccessSiteRecordByIndexId(id)
 
     def generateList(self, resourceIndexList):
         res = []
@@ -119,6 +120,7 @@ class ResourceService:
         return res
 
 
+# Service to manage image resource. It normally is used by ResourceService
 class ImageResourceService:
     def getImageResource(self, id):
         return ImageResourceDao().getResource(id)
@@ -129,7 +131,7 @@ class ImageResourceService:
     def removeResource(self, id):
         ImageResourceDao().removeResource(id)
 
-
+# Service to manage text resource. It normally is used by ResourceService
 class TextResourceService:
     def getTextResource(self, id):
         return TextResourceDao().getResource(id)
@@ -140,7 +142,7 @@ class TextResourceService:
     def removeResource(self, id):
         TextResourceDao().removeResource(id)
 
-
+# Service to maange access list.
 class ResourceAccessSiteService:
     def getAccessSiteListByIndexId(self, id):
         accessSite = ResourceAccessSiteDao().getResourceAccessSiteByResourceId(id)
@@ -152,18 +154,21 @@ class ResourceAccessSiteService:
         return accessList
     
     def updateAccessSiteByIndexId(self, indexId, site):
+        # The database we used, sqlite, could not save directly an array
+        # So the array is transfered into string with comma seperating each item (domain name)
         accessSite = ";".join(site)
         ResourceAccessSiteDao().updateResourceAccessSite(accessSite=accessSite, indexId=indexId)
 
     def createAccessSite(self, accessSite, indexId):
         ResourceAccessSiteDao().addResourceAccessSite(accessSite=accessSite, indexId=indexId)
 
-    def removeAccessSiteByIndexId(self, indexId):
+    def removeAccessSiteRecordByIndexId(self, indexId):
         ResourceAccessSiteDao().removeResourceAccessSite(indexId==indexId)
 
     def addAccessSiteByIndexId(self, indexId, site):
         siteList = self.getAccessSiteListByIndexId(indexId)
         if site not in siteList:
+            # update the database only if target site does not already exist in the list 
             siteList.append(site)
             self.updateAccessSiteByIndexId(indexId=indexId, site=siteList)
         return siteList
@@ -171,6 +176,7 @@ class ResourceAccessSiteService:
     def removeAccessSiteByIndexId(self, indexId, site):
         siteList = self.getAccessSiteListByIndexId(indexId)
         if site in siteList:
+            # remove the domain name only if target site exists in the list 
             siteList.remove(site)
             self.updateAccessSiteByIndexId(indexId=indexId, site=siteList)
         return siteList

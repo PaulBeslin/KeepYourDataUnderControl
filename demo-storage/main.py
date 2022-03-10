@@ -7,6 +7,16 @@ from flask_cors import CORS
 from controller import api
 import ssl
 
+# This application is devised into three parts:
+#   1. Controller
+#       Bind all routes. The file Projet3A.postman_collection.json could be imported
+#       in Postman to have all useful api and examples of requests and responses.
+#   2. Service
+#       Offer necessary APIs to manage models.
+#   3. Model
+#       3.1 DAO : APIs to CRUD database
+#       3.2 models: abstractions of database's tables.
+
 def create_app():
     from models import db
     
