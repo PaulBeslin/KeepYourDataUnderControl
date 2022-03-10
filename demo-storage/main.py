@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
+from config import UPLOAD_FOLDER
+
+
 from controller import api
 import ssl
 
@@ -36,6 +39,10 @@ def create_app():
     CORS(app)
     app.config['UPLOAD_FOLDER'] = os.environ.get("API_UPLOAD_FOLDER", "./")
     app.register_blueprint(api)
+
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
     return app
 
 
