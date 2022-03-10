@@ -7,6 +7,10 @@ from werkzeug.utils import secure_filename
 
 db = SQLAlchemy()
 
+# All the statu fields in the model is to mark if the record is delted
+# If status is 0, it means that the resource is delted
+# This field is to maintain the possibility to withdraw wrong delete operation by users
+
 class ResourceAccessSite(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     resource_id = db.Column(db.Integer)
@@ -18,6 +22,8 @@ class ResourceAccessSite(db.Model):
 class ResourceIndex(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     uuid = db.Column(db.String())
+    # it means the resource is an image if data_type is 1
+    # the resource is a text when data_type is 2 
     data_type = db.Column(db.Integer)
     resource_id = db.Column(db.Integer)
     created_time = db.Column(db.DateTime())
