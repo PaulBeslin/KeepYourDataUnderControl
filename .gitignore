@@ -12,7 +12,7 @@
 **/start.sh
 
 # SQLITE DB file
-app.db
+app.sqlite
 
 # Python related files
 **/*.pyc
