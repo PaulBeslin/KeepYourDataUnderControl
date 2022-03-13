@@ -3,7 +3,7 @@
 \[EN\] This repository contains a draft proposal of a system to give the control of the personal data back to their real owners, created for research purposes. This is the work of two successive groups of engineering students of [IMT Atlantique](https://www.imt-atlantique.fr/en) during the academic years of 2020-2021 and 2021-2022. You can find the work inherited from the 2020-2021 group [here](https://gitlab.inria.fr/alebre/teaching-keepyourdata).  
 Following is an introduction to the concepts and principles of our work, in english and in french. The details of what has been done and tried and the ideas we give as a suggestion for the team that will replace us are only available in french.
 
-\[FR\] Ce repository contient un brouillon de proposition de système permettant de rendre le contrôle des données personnelles à leur propriétaire légitime, créé à des fins de recherche. Il s'agit du travail de deux groupes successifs d'élèves d'[IMT Atlantique](https://www.imt-atlantique.fr) pendant les années 2020-2021 et 2021-2022. Vous pouvez trouver le travail hérité du premier groupe [ici](https://gitlab.inria.fr/alebre/teaching-keepyourdata).
+\[FR\] Ce repository contient une ébauche de proposition de système permettant de rendre le contrôle des données personnelles à leur propriétaire légitime, créé à des fins de recherche. Il s'agit du travail de deux groupes successifs d'élèves d'[IMT Atlantique](https://www.imt-atlantique.fr) pendant les années 2020-2021 et 2021-2022. Vous pouvez trouver le travail hérité du premier groupe [ici](https://gitlab.inria.fr/alebre/teaching-keepyourdata).  
 Ce qui suit est une introduction aux concepts et principes de notre travail, and anglais et en français. Les détails de ce qui a été fait et essayé à ce stade et les idées que nous offrons comme suggestions à nos successeurs ne sont qu'en français. 
 
 - [1. English](#1-english)
@@ -91,13 +91,19 @@ Pour des images, nous avons décidé d'inclure les liens dans des QR codes que n
 
 ![](./ressources/images/Principe-RA.jpg)
 
-***
-
 ### 2.2. Ce qui a été fait
 
 La réalisation de ce projet repose sur deux parties :
 
-- Le développement d’une [extension pour navigateur](extension/README.md) permettant de réaliser le rôle de l’acteur intermédiaire.
-- La conception d'une [application de stockage](demo-storage/README.md) des ressources client indépendante permettant d'effectuer une démonstration et d'étudier des notions de sécurité de la donnée
+- le développement d’une [extension pour navigateur](extension/README.md) permettant de réaliser le rôle de l’acteur intermédiaire;
+- la conception d'une [application de stockage](demo-storage/README.md) des ressources client indépendante.
+
+Au stade actuel, ces deux outils permettent de remplacer des ressources texte et image par des urls, et de traduire ces derniers pour visionner les ressources. Il existe une ébauche d'interface de gestion de la base de données depuis l'extension, et quelques méthodes de sécurisation du stockage ont été mises en place, comme des access lists discriminant par site.
+Le système fonctionne actuellement sur LinkedIn et Facebook.
 
 ### 2.3. Ce qu'il reste à faire
+
+Nous conseillons à ceux qui hériteraient éventuellement de ce projet de se tourner vers les problématiques suivantes:
+- la gestion des ressources vidéo, en créant des vidéos qui auraient pour seule image le QR code qui mène vers la ressource;
+- l'amélioration de l'interface de gestion de la base de données, qui n'est qu'une ébauche peu ergonomique à ce stade.
+S'ils décident de se re-pencher vers des fonctionnalités déjà mises en place, nous leur suggérons de jeter un oeil aux documents qui décrivent nos difficultés plus en détail, afin de ne pas s'enfoncer dans les mêmes impasses que nous.
