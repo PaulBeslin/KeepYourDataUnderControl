@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 
-from config import UPLOAD_FOLDER
+from config import UPLOAD_FOLDER, PORT
 
 
 from controller import api
@@ -34,7 +34,6 @@ def create_app():
         # Create all tables if needed. This doesn't work when updating the fields of a models, in
         # this case either make the ALTER TABLE by hand or delete the .db file
         db.create_all()
-    load_dotenv()
 
     CORS(app)
     app.config['UPLOAD_FOLDER'] = os.environ.get("API_UPLOAD_FOLDER", "./")
@@ -48,4 +47,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(port=int(os.environ.get('FLASK_PORT', 5001)))
+    app.run(port=int(PORT))
