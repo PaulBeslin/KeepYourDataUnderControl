@@ -19,7 +19,7 @@ To start the web service, you need to:
    | `BASE_HOST`         | `http://localhost:5001` | The base url to use when building the full url to the files. MUST start with http or https |
    | `PORT`              | `5001`                  | The port of the server, it must be the same as the port in BASE_HOST |
    | `DEFAULT_ACESS_URL` | `all`                   | The default access web site for the resources.               |
-   | `DB_LINK`           | ` `                     | A remote database'url for connection if you need.            |
+   | `DB_LINK`           | ` `                     | A remote database's url for connection if you need.          |
 
 3. Install all dependencies using following commands in command line <u>in this folder</u>
 
