@@ -2,6 +2,7 @@ import $ from "jquery";
 import './manage.css';
 import { showContextMenu } from "./menu.js";
 import { removeDataFromDB, getAllDataFromDB } from "./requests.js";
+import {GET_RESOURCE_URL} from './requests.js';
 
 /**
  * @typedef {import('./requests.js').DataStruct} DataStruct
@@ -39,13 +40,13 @@ function createDataFrame(data){
         case "image":
             dataElem = document.createElement('img');
             dataElem.className = "limit-size";
-            dataElem.src = data.data;
+            dataElem.src =  GET_RESOURCE_URL + data.id;
             break;
         case "text":
             dataElem = document.createElement('p');
             $.ajax({
                 type: "GET",
-                url: data.data
+                url: GET_RESOURCE_URL + data.id
             })
                 .then(text => {dataElem.innerText = text});
             break;

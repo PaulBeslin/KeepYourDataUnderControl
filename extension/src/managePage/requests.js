@@ -6,6 +6,7 @@ const DELETE_RESOURCE_URL = DB_URL + "remove/";
 const GET_ALL_RESOURCES_URL = DB_URL + "all";
 const ADD_ACL_URL = DB_URL + "addAcl";
 const REMOVE_ACL_URL = DB_URL + "removeAcl";
+const GET_RESOURCE_URL = DB_URL + "query/resource/";
 
 /**
  * Structure of a userdata retrieved from the database.
@@ -107,3 +108,4 @@ function getDataACLFromDB(id){
 }
 
 export {removeDataFromDB, getAllDataFromDB, addAccessInDB, removeAccessInDB, getDataACLFromDB}
+export{GET_RESOURCE_URL};
