@@ -25,14 +25,14 @@ class ResourceAccessSiteDao:
         record = db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).one_or_none()
         if (record == None):
             return
-        db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"access_site": accessSite}, synchronize_session=False)
+        db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"access_site": accessSite, "last_modified_time":datetime.now()}, synchronize_session=False)
         db.session.commit()
 
     def removeResourceAccessSite(self, indexId):
         accessSite = db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).one_or_none()
         if (accessSite == None):
             return
-        db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"status": 0}, synchronize_session=False)
+        db.session.query(ResourceAccessSite).filter(ResourceAccessSite.resource_id == indexId).filter(ResourceAccessSite.status==1).update({"status": 0, "last_modified_time":datetime.now()}, synchronize_session=False)
         db.session.commit()
 
 class ResourceIndexDao:
@@ -81,7 +81,7 @@ class ResourceIndexDao:
             ImageResourceDao().removeResource(index.resource_id)
         if (index.data_type == 2):
             TextResourceDao().removeResource(index.resource_id)
-        db.session.query(ResourceIndex).filter(ResourceIndex.uuid == uuid).filter(ResourceIndex.status == 1).update({"status":0}, synchronize_session=False)
+        db.session.query(ResourceIndex).filter(ResourceIndex.uuid == uuid).filter(ResourceIndex.status == 1).update({"status":0, "last_modified_time":datetime.now()}, synchronize_session=False)
         db.session.commit()
     
     def removeResource(self, id):
@@ -92,7 +92,7 @@ class ResourceIndexDao:
             ImageResourceDao().removeResource(index.resource_id)
         if (index.data_type == 2):
             TextResourceDao().removeResource(index.resource_id)
-        db.session.query(ResourceIndex).filter(ResourceIndex.id == id).filter(ResourceIndex.status == 1).update({"status":0}, synchronize_session=False)
+        db.session.query(ResourceIndex).filter(ResourceIndex.id == id).filter(ResourceIndex.status == 1).update({"status":0, "last_modified_time":datetime.now()}, synchronize_session=False)
         db.session.commit()
 
 class TextResourceDao:
@@ -116,7 +116,7 @@ class TextResourceDao:
         return textResource.id
     
     def removeResource(self, id):
-        db.session.query(TextResource).filter(TextResource.id == id).filter(TextResource.status == 1).update({"status":0}, synchronize_session='fetch')
+        db.session.query(TextResource).filter(TextResource.id == id).filter(TextResource.status == 1).update({"status":0, "last_modified_time":datetime.now()}, synchronize_session='fetch')
         db.session.commit()
 
 class ImageResourceDao:
@@ -140,5 +140,5 @@ class ImageResourceDao:
         return imageReousrce.id
     
     def removeResource(self, id):
-        db.session.query(ImageResource).filter(ImageResource.id == id).filter(ImageResource.status == 1).update({"status":0}, synchronize_session='fetch')
+        db.session.query(ImageResource).filter(ImageResource.id == id).filter(ImageResource.status == 1).update({"status":0, "last_modified_time":datetime.now()}, synchronize_session='fetch')
         db.session.commit()
