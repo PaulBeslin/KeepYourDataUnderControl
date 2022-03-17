@@ -104,7 +104,26 @@ Note that the tests were carried out on LinkedIn primarily.
 
 ### Image interception
 
-First, we tried replacing the 'src' attribute of the `<img>` were the uploaded image is displayed in the post creation form.
+#### Image preview tag
+First, we tried replacing the 'src' attribute of the `<img>` tag where the uploaded image is displayed in the post creation form. The 'src' value is an image in base64 format, which means that the whole image is stored in the tag rather than a link to a file.
+
+<img src="srcReadme/imgElement.png" alt="Image preview in creation post" width="600"/>
+
+Therefore, we tried replacing it by the QRCode in the same format.
+However, when the post is submitted, the change isn't taken into account, and the original image is sent instead. This hints that the uploaded image is stored somewhere else instead.
+
+Quick note: on LinkedIn, the image is only sent to the LinkedIn servers once the post is submitted. This means that as long as the post creation form stays open, the image selected by the user is stored locally somewhere in the DOM. This isn't true for all sites though: for example on Facebook, the image is sent to the servers as soon as it is selected by the user.
 
 
+#### HTTP requests interception
+A different solution involves intercepting the image the moment it is sent on the social network's servers.
+1) Listen to HTTP requests coming from the website
+2) When the specific request containing the image is sent, block it
+3) Retrieve the image from the request payload, then encode it.
+4) Send a new request with the same headers, and put the QRCode in the payload
+
+These steps are done using the [chrome.webRequest](https://developer.chrome.com/docs/extensions/reference/webRequest/) API
+We didn't manage to make it work: the new request seems to be accepted (it returns a correct status response code), but the post isn't sent.
+You can find the code on the branch `htmlrequest`.
+Even if it did work, it currently looks for a specific LinkedIn URL in the headers to detect the wanted request. To make it a generic solution, it would be needed to find another way to recognize the request responsible of storing the image.
 
