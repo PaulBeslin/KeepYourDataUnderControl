@@ -97,4 +97,14 @@ When loading a web page, the extension will scan through the DOM elements and ch
 
 - For images, the extension will look at all the `<img>` tags in the DOM, and try to decode the image as a QRCode. If it succeeds, the QRCode is replaced by the corresponding image in the `<img>` element.
   
-  
+## Other solutions explored
+
+Here is a list of different approaches that did not work, with explanations on why it didn't.
+Note that the tests were carried out on LinkedIn primarily.
+
+### Image interception
+
+First, we tried replacing the 'src' attribute of the `<img>` were the uploaded image is displayed in the post creation form.
+
+
+
