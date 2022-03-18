@@ -37,4 +37,25 @@ To start the web service, you need to:
 
 # Available APIs
 
-All available APIs could be found in [Postman exported file](./Projet3A.postman_collection.json). This file could be imported into [Postman](https://www.postman.com/downloads/). The example of requests and responses are also available in the Postman.
+All available APIs and corresponding examples of requests and responses could be found in [Postman exported file](./Projet3A.postman_collection.json). This file could be imported into [Postman](https://www.postman.com/downloads/) to have a clear view of the API list.
+
+# Architecture
+
+This Flask application consists of three layers:
+
+1. [Controller layer](demo-storage/controller.py)
+
+   This layer is used for the definition of API and possing data format.
+
+2. [Service layer](demo-storage/service.py)
+
+   Business logic is implemented here. Since app's functions are not that difficult, this layer is relatively simple. 
+
+3. [DAO(Data Access Object)](demo-storage/dao.py) and [Model](demo-storage/models.py) layer
+
+   1. DAO helps to CRUD data with database.
+   2. Models are exactly database's tables. Most fields are intuitive. Comments help to understand for those fields are not easy to understand.
+
+The process to respond a request begins with the receive of the request at controller. It obtains data from the request and pass it to the corresponding services. The services get the data and retrieve models on using functions offered by DAO. Useful fields are returned back to the controller. The controller encodes the response and sends it back to the frontend.
+
+For the details of ACL(Access Control List), the slide of this project elaborates how it is implemented at present and why we have chosen this way.
