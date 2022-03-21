@@ -1,10 +1,10 @@
 # Keep Control of Your Data
 
-\[EN\] This repository contains a draft proposal of a system to give the control of the personal data back to their real owners, created for research purposes. This is the work of two successive groups of engineering students of [IMT Atlantique](https://www.imt-atlantique.fr/en) during the academic years of 2020-2021 and 2021-2022. You can find the work inherited from the 2020-2021 group [here](https://gitlab.inria.fr/alebre/teaching-keepyourdata).  
+\[EN\] This repository contains a draft proposal of a system to give the control of the personal data back to their real owners, created for research purposes. This is the work of two successive groups of engineering students of [IMT Atlantique](https://www.imt-atlantique.fr/en) during the academic years of 2020-2021 and 2021-2022. You can find the work inherited from the 2020-2021 group [here](https://gitlab.inria.fr/alebre/teaching-keepyourdata) or [here](https://github.com/bastantoine/KeepYourDataUnderControl).  
 Following is an introduction to the concepts and principles of our work, in english and in french. The details of what has been done and tried and the ideas we give as a suggestion for the team that will replace us are only available in french.
 
 \[FR\] Ce repository contient une ébauche de proposition de système permettant de rendre le contrôle des données personnelles à leur propriétaire légitime, créé à des fins de recherche. Il s'agit du travail de deux groupes successifs d'élèves d'[IMT Atlantique](https://www.imt-atlantique.fr) pendant les années 2020-2021 et 2021-2022. Vous pouvez trouver le travail hérité du premier groupe [ici](https://gitlab.inria.fr/alebre/teaching-keepyourdata).  
-Ce qui suit est une introduction aux concepts et principes de notre travail, and anglais et en français. Les détails de ce qui a été fait et essayé à ce stade et les idées que nous offrons comme suggestions à nos successeurs ne sont qu'en français. 
+Ce qui suit est une introduction aux concepts et principes de notre travail, en anglais et en français. Les détails de ce qui a été fait et essayé à ce stade et les idées que nous offrons comme suggestions à nos successeurs ne sont qu'en français. 
 
 - [1. English](#1-english)
   - [1.1 Concept](#11-concept)
@@ -85,7 +85,7 @@ Puisque notre solution devait pouvoir fonctionner sur tous les services, il nous
 
 Pour des textes, le problèmes est vite résolu, puisqu'il suffit d'envoyer le lien reçu (il est toutefois probablement nécessaire de l'inclure dans une sorte de template, afin d'éviter des problèmes qui pourrait subvenir lors de l'envoi, et afin de le localiser plus facilement dans la page).
 
-Pour des images, nous avons décidé d'inclure les liens dans des QR codes que nous envoyons ensuite au service. Ainsi lors de la récupération des données, le service envoye le QR code, nous le décodons pour avoir le lien contenu dedans et pouvons ensuite récupérer et afficher l'image.
+Pour des images, nous avons décidé d'inclure les liens dans des QR codes que nous envoyons ensuite au service. Ainsi lors de la récupération des données, le service envoie le QR code, nous le décodons pour avoir le lien contenu dedans et pouvons ensuite récupérer et afficher l'image.
 
 ![](./ressources/images/Principe-ISE.jpg)
 
@@ -98,7 +98,7 @@ La réalisation de ce projet repose sur deux parties :
 - le développement d’une [extension pour navigateur](extension/README.md) permettant de réaliser le rôle de l’acteur intermédiaire;
 - la conception d'une [application de stockage](demo-storage/README.md) des ressources client indépendante.
 
-Au stade actuel, ces deux outils permettent de remplacer des ressources texte et image par des urls, et de traduire ces derniers pour visionner les ressources. Il existe une ébauche d'interface de gestion de la base de données depuis l'extension, et quelques méthodes de sécurisation du stockage ont été mises en place, comme des access lists discriminant par site.
+Au stade actuel, ces deux outils permettent de remplacer des ressources texte et image par des urls, et de traduire ces dernières pour visionner les ressources. Il existe une ébauche d'interface de gestion de la base de données depuis l'extension, et quelques méthodes de sécurisation du stockage ont été mises en place, comme des access lists discriminant par site.
 Le système fonctionne actuellement sur LinkedIn et Facebook.
 
 ### 2.3. Ce qu'il reste à faire
