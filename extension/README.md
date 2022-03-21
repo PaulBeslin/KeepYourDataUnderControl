@@ -114,6 +114,9 @@ However, when the post is submitted, the change isn't taken into account, and th
 
 Quick note: on LinkedIn, the image is only sent to the LinkedIn servers once the post is submitted. This means that as long as the post creation form stays open, the image selected by the user is stored locally somewhere in the DOM. This isn't true for all sites though: for example on Facebook, the image is sent to the servers as soon as it is selected by the user.
 
+#### Input tag
+After some investigation, we found out that is in fact stored in a `<input type="file">` tag. This tag only becomes visible in the HTML page once the file picker opens, and hides as soon as the picker closes. However, changing the file in this tag isn't enough. On Facebook, the image is sent in database as soon at it is chosen by the user. Even on LinkedIn, something seems to happen right after submitting the image, so changing the input file later doesn't work. In fact, submitting a file triggers an `onchange` event, which does some operations on the chosen image. This is why the working solution requires to override this event.
+
 
 #### HTTP requests interception
 A different solution involves intercepting the image the moment it is sent on the social network's servers.
