@@ -39,6 +39,22 @@ To start the web service, you need to:
 
 All available APIs and corresponding examples of requests and responses could be found in [Postman exported file](./Projet3A.postman_collection.json). This file could be imported into [Postman](https://www.postman.com/downloads/) to have a clear view of the API list.
 
+| API                      | Method | Description                                              |
+| ------------------------ | ------ | -------------------------------------------------------- |
+| `/all`                   | GET    | Get all available resources                              |
+| `/query/resource/{uuid}` | GET    | Get resource by ID                                       |
+| `/owner/{id}`            | GET    | Get given owner's resources                              |
+| `/acl/deny/image`        | GET    | Get image information for a denied request               |
+| `/acl/deny/text`         | GET    | Get text information for a denied request                |
+| `/`                      | POST   | Add a new resource into the database                     |
+| `/updateAcl`             | POST   | Modify the access control list for given resource        |
+| `/addAcl`                | POST   | Add a new accessible site for given resource             |
+| `/acl/{uuid}`            | POST   | Verify the site and get the resource                     |
+| `/remove`                | POST   | Delte given resource                                     |
+| `/removeAcl`             | POST   | Remove a site from given resource's accessible site list |
+
+
+
 # Architecture
 
 This Flask application consists of three layers:
