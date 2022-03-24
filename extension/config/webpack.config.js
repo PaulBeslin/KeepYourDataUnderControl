@@ -10,7 +10,6 @@ const PATHS = require('./paths');
 // Merge webpack configuration files
 const config = (env, argv) => merge(common, {
   entry: {
-    popup: PATHS.src + '/popup.js',
     manage: PATHS.src + '/managePage/manage.js',
     menu: PATHS.src + '/managePage/menu.js',
     contentScript: PATHS.src + '/contentScript.js',

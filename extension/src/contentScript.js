@@ -152,6 +152,8 @@ $(window).on("load", async function () {
 
 
 
+  console.log("BEFORE");
+
   // Image Handler
   document.querySelectorAll("img:not([analyzed])").forEach(async (node) => {
 
@@ -159,12 +161,17 @@ $(window).on("load", async function () {
     try {
       await qrCode.decode();
       if (qrCode.link) {
+        console.log("YOUR CURRENT URL", qrCode.link);
         let accessURL = await tryGetResourceURL(qrCode.link);
+
+        console.log("YOUR CURRENT URL", accessURL);
+
         node.setAttribute("src", accessURL);
         node.setAttribute("analyzed", '');
         node.addEventListener("click", () => {
           setTimeout(function () {
-            let currentImg = document.getElementsByClassName("artdeco-modal__content")[0].querySelector("img:not([analyzed])");
+            //TO REMOVE
+            let currentImg = document.querySelector("img:not([analyzed])");
             currentImg.setAttribute("src", accessURL);
             currentImg.setAttribute("analyzed", '');
           }, 500);
@@ -222,8 +229,10 @@ $(window).on("load", async function () {
     return data;
   }
 
-  async function tryGetResourceURL(url){
-    const body = JSON.stringify({"site": location.host});
+  async function tryGetResourceURL(url) {
+    const body = JSON.stringify({
+      "site": location.host
+    });
 
     const result = await $.ajax({
       type: "POST",

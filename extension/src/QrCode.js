@@ -18,6 +18,7 @@ export default class Qrcode {
  
             //qrcode.write(this.link)
             qrcode.write(this.link);
+            console.log("DECODE LINK",this.link)
             qrcode.setErrorCorrectionLevel(ErrorCorrectionLevel.H);
             
             qrcode.make();
