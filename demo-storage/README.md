@@ -23,16 +23,34 @@ To start the web service, you need to:
 
 3. Install all dependencies using following commands in command line <u>in this folder</u>
 
+On Linux:
+
    ```shell
    python3 -m venv venv # Creation of virtual environments
    source venv/bin/activate # Activation of virtual environments
    pip install -r requirements.txt # Install of all necessary dependencies
    ```
+   
+On Windows:
+
+   ```shell
+   python -m venv venv # Creation of virtual environments
+   cd venv/Scripts
+   ./activate.bat # Activation of virtual environments
+   cd ../..
+   pip install -r requirements.txt # Install of all necessary dependencies
+   ```
 
 4. Start the service using following command
 
+On Linux:
    ```shell
    python3 main.py
+   ```
+   
+On Windows:
+   ```shell
+   python main.py
    ```
 
 # Available APIs
