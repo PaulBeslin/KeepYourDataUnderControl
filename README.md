@@ -102,7 +102,7 @@ Au stade actuel, ces deux outils permettent de remplacer des ressources texte et
 Le système fonctionne actuellement sur LinkedIn et Facebook.
 
 Un [powerpoint](ressources/2021-2022/presentations/22_03_extension.pdf) aborde en détail certaines notions abordées lors du projet, comme l'étude du fonctionnement d'un moteur de recherche, nos réflexions sur les acess lists, et une présentation imagée du fonctionnement de l'extension. Dans [ce même dossier](ressources/2021-2022/presentations/) se trouvent tous nos documents de présentation de l'année.
-Les branches [html-request](htmlrequest) et [acl](acl) sont là à but informatif: elles ne sont pas utiles pour la compréhension du projet tel qu'il est actuellement, mais contiennent les traces d'impasses que nous avons pu rencontrer.
+La branche [html-request](htmlrequest) est là à but informatif: elle n'est pas utile pour la compréhension du projet tel qu'il est actuellement, mais contient les traces d'impasses que nous avons pu rencontrer, sur l'interception de requêtes html, notamment. Plus de détails dans la partie [extension](extension/README.md).
 
 ### 2.3. Ce qu'il reste à faire
 
