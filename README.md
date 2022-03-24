@@ -98,8 +98,11 @@ La réalisation de ce projet repose sur deux parties :
 - le développement d’une [extension pour navigateur](extension/README.md) permettant de réaliser le rôle de l’acteur intermédiaire;
 - la conception d'une [application de stockage](demo-storage/README.md) des ressources client indépendante.
 
-Au stade actuel, ces deux outils permettent de remplacer des ressources texte et image par des urls, et de traduire ces dernières pour visionner les ressources. Il existe une ébauche d'interface de gestion de la base de données depuis l'extension, et quelques méthodes de sécurisation du stockage ont été mises en place, comme des access lists discriminant par site.
+Au stade actuel, ces deux outils permettent de remplacer des ressources texte et image par des urls, et de traduire ces dernières pour visionner les ressources. Il existe une ébauche d'interface de gestion de la base de données depuis l'[extension](extension/README.md), et quelques méthodes de sécurisation du [stockage](demo-storage/README.md) ont été mises en place, comme des [access lists](ressources/2021-2022/presentations/22_03_extension.pdf) discriminant par site.
 Le système fonctionne actuellement sur LinkedIn et Facebook.
+
+Un [powerpoint](ressources/2021-2022/presentations/22_03_extension.pdf) aborde en détail certaines notions abordées lors du projet, comme l'étude du fonctionnement d'un moteur de recherche, nos réflexions sur les acess lists, et une présentation imagée du fonctionnement de l'extension. Dans [ce même dossier](ressources/2021-2022/presentations/) se trouvent tous nos documents de présentation de l'année.
+Les branches [html-request](htmlrequest) et [acl](acl) sont là à but informatif: elles ne sont pas utiles pour la compréhension du projet tel qu'il est actuellement, mais contiennent les traces d'impasses que nous avons pu rencontrer.
 
 ### 2.3. Ce qu'il reste à faire
 
