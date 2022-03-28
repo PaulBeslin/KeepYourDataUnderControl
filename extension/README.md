@@ -3,13 +3,20 @@
 - L'extension fonctionne uniquement sur le navigateur **google chrome**
 
 ## Installation
+ - Installer Node.js et Npm.
+ - Ouvrez l'invite de commande et positionnez vous sur le répertoire de l'extension.
+ - Lancer les commandes suivantes :
+     1) npm install : pour installer les dependences du package.json.
+     2) npm run build : pour generer le dossier du build de l'extension.
+     3) npm run watch : pour que le build se fasse automatiqument lorsque l'extension est modifiée.
 
+## Integration
 Afin d'utiliser l'extension au sein d'un navigateur google chrome il faut :
 
 - Ouvrir chrome et se rendre à l'url chrome://extensions/`
 - Activer le mode de développement
 - Choisir *'Load unpacked'*
-- Puis sélectionner le dossier où sont présent tous les codes de l'extension (Le dossier où est présent ce readme)
+- Puis sélectionner le dossier du build généré précédemment par l'invite de commande.
 
 ![img.png](srcReadme/chrome_load_unpacked_extension.png)
 
@@ -39,10 +46,7 @@ Les fichiers standards dans le développement d'extension ne seront pas réexpli
 
 ### `content_script-1.js`
 
-Ce content script implémente le principe Récupération-Affichage, actuellement il peut traiter :
-
-- Les balises `<e-img>`, `<e-txt>` et partiellement les balises `<e-vid>`.
-- Les images étant des qrcode et contenant un lien vers une ressource distante.
+Ce content script implémente le principe Récupération-Affichage.
 
 ### `background.js`
 
@@ -83,7 +87,7 @@ The link must be provided to the site in the same format as the intercepted data
 - For texts, we simply replace the selected words by the URL to the stored text in database. However, we also need to be able to tell the difference between an URL provided by our extension, and a standard URL: when decoding the page (see next section), we need to only decode the things we encoded ourselves.
 Therefore, we add a unique prefix and suffix to the URL to make it distinguishable: `[KCoyD]http://url/to/the/data[/KCoyD]`.
 This is done in `text_encoding.js`.
-- For images, the link is encoded as a QRCode. This is done via the [QRCode library](https://www.npmjs.com/package/@nuintun/qrcode), and is implemented in `QrCode.js`.
+- For images, directly after the page dom tree is generated, we inject out JS script that changes the addEventListener prototype function, in order to force our listener to get triggered first. Once our change event listener is triggered, it takes the uploaded image and encodes it using the QRCode generated using the following npm library [QRCode library](https://www.npmjs.com/package/@nuintun/qrcode), which is implemented in `QrCode.js`.
 
 Once the data is encoded, the user can freely submit the new post, which will now contain either a text link or a QRCode.
 
@@ -95,8 +99,8 @@ When loading a web page, the extension will scan through the DOM elements and ch
   - Scan the entire page. This would work 100% but might cause performance issues.
   - Scan all tags that can contain text: `<p>`, `<h1>` etc.
 
-- For images, the extension will look at all the `<img>` tags in the DOM, and try to decode the image as a QRCode. If it succeeds, the QRCode is replaced by the corresponding image in the `<img>` element.
-  
+-For images, the extension will look at any `<img>` tags in the DOM that don't have the "analyzed" attribute and try to decode the image as a QRCode. If successful, the QRCode is replaced with the corresponding image in the `<img>` element, otherwise it is kept.
+
 ## Other solutions explored
 
 Here is a list of different approaches that did not work, with explanations on why it didn't.
